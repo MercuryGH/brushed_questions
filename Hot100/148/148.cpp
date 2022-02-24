@@ -1,5 +1,3 @@
-
-
 struct ListNode
 {
     int val;
@@ -51,66 +49,37 @@ class Solution
         }
         return dummyHead->next;
     }
+
     /**
-     * class Solution {
-public:
-    ListNode* sortList(ListNode* head) {
-        return sortList(head, nullptr);
-    }
-
-    ListNode* sortList(ListNode* head, ListNode* tail) {
-        if (head == nullptr) {
-            return head;
-        }
-        if (head->next == tail) {
-            head->next = nullptr;
-            return head;
-        }
-        ListNode* slow = head, *fast = head;
-        while (fast != tail) {
-            slow = slow->next;
-            fast = fast->next;
-            if (fast != tail) {
-                fast = fast->next;
-            }
-        }
-        ListNode* mid = slow;
-        return merge(sortList(head, mid), sortList(mid, tail));
-    }
+     * 链表归并排序
      */
-    ListNode *getTail(ListNode *head) {
-        for (ListNode *cur = head; cur; cur = cur->next) {
-            if (cur->next == nullptr) {
-                return cur;
-            }
-        }
-        return nullptr;
-    }
+
     ListNode *mergeSortList(ListNode *head) {
-        return divide(head, getTail(head));
+        return divide(head);
     }
 
-    ListNode *divide(ListNode *head, ListNode *tail) { 
+    ListNode *divide(ListNode *head) { 
         if (head == nullptr || head->next == nullptr) {
             return head;
         }
-        if (head->next == tail) {  // ※ 特殊处理，最后只剩下一个就好
-            head->next = nullptr;
-            return head;
-        }
 
+        ListNode *slowPrev;
         ListNode *slow = head;
-        ListNode *fast = head->next;
-        while (true) {  // 让 slow 恰好在链表的中间（向上取整），fast恰好在链表的末尾
+        ListNode *fast = head;
+        while (true) {  // 让 slowPrev 恰好在链表的中间，fast恰好在链表的末尾
             if (fast == nullptr || fast->next == nullptr) {
                 break;
             }
 
+            slowPrev = slow;
             slow = slow->next;
             fast = fast->next->next;
         }
+        slowPrev->next = nullptr;  // 断链！！！
+        // 理解该代码的最好方式：画奇数和偶数的情况图
         ListNode *mid = slow;
-        return merge(divide(head, mid), divide(mid, tail));
+
+        return merge(divide(head), divide(mid));
     }
     ListNode *merge(ListNode *head1, ListNode *head2) {
         ListNode *dummyHead = new ListNode(0);
@@ -137,12 +106,14 @@ public:
         if (cur2 != nullptr) {
             cur->next = cur2;
         }
-        return dummyHead->next;
+        ListNode *ret = dummyHead->next;
+        delete dummyHead;
+        return ret;
     }
 
 public:
     ListNode *sortList(ListNode *head)
     {
-        return insertionSortList(head);
+        return mergeSortList(head);
     }
 };
