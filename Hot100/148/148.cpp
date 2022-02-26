@@ -51,41 +51,11 @@ class Solution
         }
         return dummyHead->next;
     }
-    /**
-     * class Solution {
-public:
-    ListNode* sortList(ListNode* head) {
-        return sortList(head, nullptr);
-    }
 
-    ListNode* sortList(ListNode* head, ListNode* tail) {
-        if (head == nullptr) {
-            return head;
-        }
-        if (head->next == tail) {
-            head->next = nullptr;
-            return head;
-        }
-        ListNode* slow = head, *fast = head;
-        while (fast != tail) {
-            slow = slow->next;
-            fast = fast->next;
-            if (fast != tail) {
-                fast = fast->next;
-            }
-        }
-        ListNode* mid = slow;
-        return merge(sortList(head, mid), sortList(mid, tail));
-    }
+    /**
+     * 链表归并排序
      */
-    ListNode *getTail(ListNode *head) {
-        for (ListNode *cur = head; cur; cur = cur->next) {
-            if (cur->next == nullptr) {
-                return cur;
-            }
-        }
-        return nullptr;
-    }
+
     ListNode *mergeSortList(ListNode *head) {
         return divide(head, getTail(head));
     }
@@ -101,7 +71,7 @@ public:
 
         ListNode *slow = head;
         ListNode *fast = head->next;
-        while (true) {  // 让 slow 恰好在链表的中间（向上取整），fast恰好在链表的末尾
+        while (true) {  // 让 slow 恰好在链表的中间（向下取整），fast恰好在链表的末尾
             if (fast == nullptr || fast->next == nullptr) {
                 break;
             }
@@ -110,7 +80,7 @@ public:
             fast = fast->next->next;
         }
         ListNode *mid = slow;
-        return merge(divide(head, mid), divide(mid, tail));
+        return merge(divide(head, mid), divide(mid->next, tail));
     }
     ListNode *merge(ListNode *head1, ListNode *head2) {
         ListNode *dummyHead = new ListNode(0);
@@ -143,6 +113,16 @@ public:
 public:
     ListNode *sortList(ListNode *head)
     {
-        return insertionSortList(head);
+        return mergeSortList(head);
+    }
+
+private:
+    ListNode *getTail(ListNode *head) {
+        for (ListNode *cur = head; cur; cur = cur->next) {
+            if (cur->next == nullptr) {
+                return cur;
+            }
+        }
+        return nullptr;
     }
 };

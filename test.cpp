@@ -1,40 +1,27 @@
-#include <string>
-#include <vector>
 #include <iostream>
-using std::vector;
-using std::string;
+#include <vector>
 
-class Solution {
-public:
-    long long coutPairs(vector<int>& nums, int k) {
-        const int n = nums.size();
-        vector<bool> prev = vector<bool>(n);
-        vector<int> smallNums;
-        int cnt = 0;
-        for (int i = 0; i < n; i++) {
-            prev[i] = (nums[i] % k == 0);
-            if (prev[i] == true) {
-                cnt++;
-            }
-            if (nums[i] < k) {
-                smallNums.push_back(nums[i]);
-            }
-        }
+void overloaded(int const &arg) { std::cout << "by lvalue\n"; }
+void overloaded(int &&arg) { std::cout << "by rvalue\n"; }
 
-        const int m = smallNums.size();
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                
-            }
-        }
-        int pp = cnt * (n - cnt) + (cnt - 1) * cnt / 2;
-    }
-};
+template <typename t>
+/* "t &&" with "t" being template param is special, and  adjusts "t" to be
+   (for example) "int &" or non-ref "int" so std::forward knows what to do. */
+void forwarding(t &&arg)
+{
+    std::cout << "via std::forward: ";
+    overloaded(std::forward<t>(arg));
+    std::cout << "via std::move: ";
+    overloaded(std::move(arg)); // conceptually this would invalidate arg
+    std::cout << "by simple passing: ";
+    overloaded(arg);
+}
 
-int main() {
-    vector<int> nums = {8, 2, 16, 4, 5};
-    int k = 2;
-    Solution s;
-    std::cout << s.coutPairs(nums, k) << "\n";
-    return 0;
+int main()
+{
+    std::cout << "initial caller passes rvalue:\n";
+    forwarding(5);
+    std::cout << "initial caller passes lvalue:\n";
+    int x = 5;
+    forwarding(x);
 }
