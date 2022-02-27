@@ -1,9 +1,7 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
 #include <string>
-using std::vector;
-using std::string;
+using std::vector, std::string;
 
 class Solution
 {
@@ -19,8 +17,8 @@ class Solution
         }
     };
 
-    bool check(const vector<int> &time, const long long mid, const int totalTrips) {
-        long long ans = 0;
+    bool check(const vector<int> &time, const int mid, const int totalTrips) {
+        int ans = 0;
         for (const int t : time) {
             ans += mid / t;
         }
@@ -30,12 +28,15 @@ class Solution
 public:
     long long minimumTime(vector<int> &time, int totalTrips)
     {
-        // const int n = time.size();
-        const long long maxTime = *std::max_element(time.begin(), time.end());
+        const int n = time.size();
+        std::vector<Bus> buses;
+        for (const int t : time) {
+            buses.push_back(Bus(t));
+        }
 
-        long long l = 1;
-        long long r = maxTime * totalTrips;
-        long long ans = 1;
+        int l = 1;
+        int r = totalTrips;
+        int ans = 1;
         while (true) {
             if (l > r) {
                 break;
@@ -45,7 +46,7 @@ public:
                 break;
             }
 
-            const long long mid = (r - l) / 2 + l;
+            const int mid = (l + r) / 2;
             if (check(time, mid, totalTrips)) {
                 r = mid;
             } else {
@@ -58,8 +59,8 @@ public:
 
 int main() {
     Solution s;
-    vector<int> time = {10000000};
-    int totalTrips = 10000000; 
+    vector<int> time = {1, 2, 3};
+    int totalTrips = 5;
     std::cout << s.minimumTime(time, totalTrips) << "\n";
 
     return 0;

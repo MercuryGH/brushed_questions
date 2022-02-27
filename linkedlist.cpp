@@ -1,3 +1,5 @@
+#include <iostream>
+
 struct ListNode
 {
     int val;
@@ -5,6 +7,13 @@ struct ListNode
     ListNode() : val(0), next(nullptr) {}
     ListNode(int x) : val(x), next(nullptr) {}
     ListNode(int x, ListNode *next) : val(x), next(next) {}
+    void printAll() {
+        for (ListNode *cur = this; cur; cur = cur->next) {
+            std::cout << cur->val << " ";
+            // getchar();
+        }
+        std::cout << "\n";
+    }
 };
 
 /**
@@ -180,3 +189,22 @@ public:
         return quickSortList(head);
     }
 };
+
+int main() {
+    int a[] = {4,19,14,5,-3,1,8,5,11,15};
+    ListNode *listNodes[10];
+    for (int i = 0; i < 10; i++) {
+        ListNode *listNode = new ListNode(a[i]);
+        listNodes[i] = listNode;
+    }
+
+    for (int i = 0; i < 9; i++) {
+        listNodes[i]->next = listNodes[i + 1];
+    }
+    listNodes[9]->next = nullptr;
+
+    Solution s;
+    s.sortList(listNodes[0])->printAll();
+
+    return 0;
+}
