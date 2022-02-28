@@ -32,17 +32,16 @@ public:
     int rob(vector<int> &nums)
     {
         const int n = nums.size();
-        if (n == 1) {
+        if (n == 1)
+        {
             return nums[0];
         }
 
-        const int lastElementOfNums = nums[n - 1];
-        nums.pop_back();
-        const int res1 = robSub(nums);
-
-        nums.push_back(lastElementOfNums);
-        std::move(nums.begin() + 1, nums.end(), nums.begin());
-        const int res2 = robSub(nums);
+        vector<int> tmp(n - 1);
+        std::move(nums.begin(), nums.end() - 1, tmp.begin());
+        const int res1 = robSub(tmp);
+        std::move(nums.begin() + 1, nums.end(), tmp.begin());
+        const int res2 = robSub(tmp);
         return std::max(res1, res2);
     }
 };
