@@ -32,6 +32,22 @@ $$
 
 现在，房屋排成了一个二叉树。不能偷两个直接相连的结点。
 
-这是树形DP的入门题。树形DP大多采用后序遍历，本题也不例外。
+这是树形DP的入门题。
 
 考虑$f_{\text{node}, j}$表示只考虑以$\text{node}$为根结点的树，在偷$\text{node}$（$j=1$）或不偷（$j=0$）的情况下，所能达到的最大金额。那么答案在$\max(f_{\text{root}, 0}, f_{\text{root}, 1})$。
+
+考虑状态转移。如果不偷，那就取决于其左 + 右孩子的选择：
+
+$$
+f_{\text{node}, 0} = \max(f_{\text{node.left},0}, f_{\text{node.left},1}) + \max(f_{\text{node.right},0}, f_{\text{node.right},1})
+$$
+
+如果偷，那么左右都不能偷：
+
+$$
+f_{\text{node}, 1} = \text{node.val} + f_{\text{node.left},0} + f_{\text{node.right},0}
+$$
+
+**终结**条件为$f_{\text{null}, j}=0$。
+
+树形DP大多采用后序遍历，本题也不例外。可以从状态转移方程中看出来，结果需要从左孩子的结果和右孩子的结果得到，因此我们必须用后序遍历完成DP。
