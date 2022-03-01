@@ -3,63 +3,39 @@ using std::string;
 
 /**
  * 递归模拟题
- * 细节很多
+ * 细节很多，一次性难以写对
  */
 class Solution {
+    string getString(const string s, int &sIndex) {
+        const int len = s.size();
+
+        string res;
+        int repeatCnt = 0; // 读到的重复数，如 3[aa] 中的 3
+        for (int i = sIndex; i < len; i++) {
+            const char curChar = s[i];
+
+            if (isdigit(curChar)) { // 十进制解析重复数
+                repeatCnt *= 10;
+                repeatCnt += curChar - '0';
+            } else if (curChar == '[') { // 开始递归
+                i++; // 进入待解析的部分
+                string parsedStr = getString(s, i);
+                while (repeatCnt--) { // 让 res += (parsedStr * repeatCnt)
+                    res += parsedStr;
+                }
+                repeatCnt = 0;
+            } else if (curChar == ']') {
+                sIndex = i; // 更新全局字符串 s 的下标（可以看作是 getString() 的第二个返回值）
+                return res;
+            } else {
+                res += curChar;
+            }
+        }
+        return res;
+    }
 public:
     string decodeString(string s) {
-
+        int sIndex = 0;
+        return getString(s, sIndex);
     }
 };
-
-/**
- * class Solution {
-public:
-    string src; 
-    size_t ptr;
-
-    int getDigits() {
-        int ret = 0;
-        while (ptr < src.size() && isdigit(src[ptr])) {
-            ret = ret * 10 + src[ptr++] - '0';
-        }
-        return ret;
-    }
-
-    string getString() {
-        if (ptr == src.size() || src[ptr] == ']') {
-            // String -> EPS
-            return "";
-        }
-
-        char cur = src[ptr]; int repTime = 1;
-        string ret;
-
-        if (isdigit(cur)) {
-            // String -> Digits [ String ] String
-            // 解析 Digits
-            repTime = getDigits(); 
-            // 过滤左括号
-            ++ptr;
-            // 解析 String
-            string str = getString(); 
-            // 过滤右括号
-            ++ptr;
-            // 构造字符串
-            while (repTime--) ret += str; 
-        } else if (isalpha(cur)) {
-            // String -> Char String
-            // 解析 Char
-            ret = string(1, src[ptr++]);
-        }
-        
-        return ret + getString();
-    }
-
-    string decodeString(string s) {
-        src = s;
-        ptr = 0;
-        return getString();
-    }
-};
- */
