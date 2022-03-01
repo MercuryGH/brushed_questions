@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <vector>
-#include <iostream>
 #include <stack>
 using std::vector;
 
@@ -39,17 +38,3 @@ public:
         return ans;
     }
 };
-
-int main()
-{
-    vector<int> nums = {73,74,75,71,69,72,76,73};
-    Solution s;
-    vector<int> ans = s.dailyTemperatures(nums);
-    for (const auto num : ans) {
-        std::cout << num << " ";
-    }
-    std::cout << "\n";
-
-    return 0;
-}
-
