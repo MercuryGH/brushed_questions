@@ -57,13 +57,20 @@ public:
 
 /**
  * 2. 前缀和优化
+ * 思想：考虑每个结点都可能成为至少一个合法的路径的 **最下方** 的结点。
+ * 我们将从根结点到该结点的路径之和记为 curSum，
+ * 如果我们能够维护一个哈希表，其 
+ *   - key 为从根结点到该结点，所以可能得到的前缀和；
+ *   - value 为得到 key 为前缀和可能的方案数（例如 {1, -1, 1, -1} 有 2 种方案得到 0）
+ * 那么，我们查表，找到key为 curSum - targetSum 的那个 value，减去之，就可以凑出一个合法的路径，其
+ * 路径之和恰为 curSum - (curSum - targetSum) = targetSum. 
  */
 class Solution
 {
     int ans = 0;
 
     void dfs(TreeNode *root, const int curSum, const int targetSum, std::unordered_map<int, int> &hash) {
-        if (hash.find(curSum - targetSum) != hash.end()) { // 哈希表中有
+        if (hash.find(curSum - targetSum) != hash.end()) { // 减去某个前缀和可以解决问题
             ans += hash[curSum - targetSum];
         }
         hash[curSum]++;
@@ -73,7 +80,7 @@ class Solution
         if (root->right) {
             dfs(root->right, curSum + root->right->val, targetSum, hash);
         }
-        hash[curSum]--;
+        hash[curSum]--; // 回溯时要消去
     }
 public:
     int pathSum(TreeNode *root, int targetSum)
@@ -81,21 +88,10 @@ public:
         if (root == nullptr) {
             return 0;
         }
-        std::unordered_map<int, int> hash;
+        std::unordered_map<int, int> hash; // key: 能够凑出的前缀和, value: 凑出这个前缀和的方案数
         hash[0] = 1;
         dfs(root, root->val, targetSum, hash);
 
         return ans;
     }
 };
-/**
- * class Solution {
-    void dfs(TreeNode root, int val) {
-        if (map.containsKey(val - t)) ans += map.get(val - t);
-        map.put(val, map.getOrDefault(val, 0) + 1);
-        if (root.left != null) dfs(root.left, val + root.left.val);
-        if (root.right != null) dfs(root.right, val + root.right.val);
-        map.put(val, map.getOrDefault(val, 0) - 1);
-    }
-}
- */

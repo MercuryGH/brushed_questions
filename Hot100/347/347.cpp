@@ -14,7 +14,7 @@ class Solution
      * 时间复杂度 O(n log k)
      */
     void solveByHeap(const std::unordered_map<int, int> &hash, int k, vector<int> &ans) {
-        const auto cmp = [](std::pair<int, int> p1, std::pair<int, int> p2) {
+        const auto cmp = [](const std::pair<int, int> p1, const std::pair<int, int> p2) {
             return p1.second >= p2.second; // 结果为 true 的会被放到下面
         };
         std::priority_queue<
