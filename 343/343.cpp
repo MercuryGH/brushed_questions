@@ -1,7 +1,5 @@
 #include <algorithm>
 #include <vector>
-#include <iostream>
-#include <stack>
 using std::vector;
 
 class Solution {
@@ -18,24 +16,6 @@ public:
             }
         }
 
-        for (const auto num : dp) {
-            std::cout << num << " ";
-        }
-        std::cout << "\n";
-
-
         return dp[n];
     }
 };
-
-
-int main()
-{
-    vector<int> nums = {73,74,75,71,69,72,76,73};
-    int n = 2;
-    Solution s;
-    s.integerBreak(n);
-
-    return 0;
-}
-

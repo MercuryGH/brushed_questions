@@ -1,17 +1,14 @@
 import math
 from math import comb
 
-m = 100
+s = '12345'
 
-f = [0]
-for i in range(1, m + 1):
-    p_i = pow((2 / 3), i)
+s1 = s[: -1]
+s2 = s[-1]
+s3 = s[-2 : : -1]
+s4 = s[: -1][:: -1]
+lamb = lambda x: x + 1
+a = [-2, -1, 0]
+res = min(a, key=lambda x: abs(x - 1))
 
-    prev_sum = 0
-    for j in range(0, i):
-        p_j = comb(i, j) * pow((2 / 3), j) * pow((1 / 3), i - j)
-        prev_sum += p_j * f[j]
-    f.append((1 + prev_sum) / (1 - p_i))
-
-for f_i in f:
-    print(f_i) 
+print(res)
