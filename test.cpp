@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
-#include <stack>
+#include <unordered_map>
 using std::vector;
 
 class Solution {
@@ -31,10 +31,13 @@ public:
 
 int main()
 {
-    vector<int> nums = {73,74,75,71,69,72,76,73};
-    int n = 2;
-    Solution s;
-    s.integerBreak(n);
+    std::unordered_map<char, int> hash;
+    hash['a'] = 1;
+    hash['b']++;
+
+    std::cout << (hash.find('c') == hash.end()) << "\n";
+    std::cout << hash['a'] << " " << hash['b'] << " " << hash['c'] << "\n";
+    std::cout << (hash.find('c') == hash.end()) << "\n";
 
     return 0;
 }
