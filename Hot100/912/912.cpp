@@ -89,6 +89,45 @@ class Solution
         }
     }
 
+    /**
+     * 堆排序
+     * 由于只需要 percolateDown，所以不需要 nums[0] 作为 pivot
+     */ 
+    void percolateDown(vector<int> &nums, int cur, int size) {
+        while (true) {
+            const int lSon = cur * 2 + 1;
+            const int rSon = cur * 2 + 2;
+            const bool hasLSon = lSon < size;
+            const bool hasRSon = rSon < size;
+
+            int largeIndex = cur;
+            if (hasLSon) {
+                largeIndex = nums[largeIndex] > nums[lSon] ? largeIndex : lSon;
+            }
+            if (hasRSon) {
+                largeIndex = nums[largeIndex] > nums[rSon] ? largeIndex : rSon;
+            }
+
+            if (largeIndex == cur) { // 到底了，或者下面的都是小的
+                return;
+            }
+            std::swap(nums[cur], nums[largeIndex]);
+            cur = largeIndex; // 继续迭代
+        }
+    }
+    void buildMaxHeap(vector<int> &nums, int size) {
+        for (int i = (size - 1) / 2; i >= 0; i--) {
+            percolateDown(nums, i, size);
+        }
+    }
+    void heapSort(vector<int> &nums, int n) {
+        buildMaxHeap(nums, n);
+        for (int i = n - 1; i >= 1; i--) {
+            std::swap(nums[i], nums[0]);
+            percolateDown(nums, 0, i);
+        }
+    }
+
 public:
     vector<int> sortArray(vector<int> &nums)
     {
@@ -98,8 +137,11 @@ public:
         // quickSort(nums, 0, n - 1);
         // return nums;
 
-        tmp.resize(n, 0);
-        mergeSort(nums, 0, n - 1);
+        // tmp.resize(n, 0);
+        // mergeSort(nums, 0, n - 1);
+
+        heapSort(nums, n);
+
         return nums;
     }
 };
