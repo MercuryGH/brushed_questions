@@ -27,7 +27,7 @@ public:
         for (const char ch : s)
         {
             // key = ch, value = pairs[ch]
-            if (pairs.find(ch) != pairs.end())  // 比 pairs.count(ch) > 0 更快
+            if (pairs.find(ch) != pairs.end())  // 是右括号
             {
                 if (stk.empty() == true || stk.top() != pairs[ch])
                 {
@@ -35,7 +35,7 @@ public:
                 }
                 stk.pop();
             }
-            else  // 找不到匹配的左括号
+            else  // 是左括号
             {
                 stk.push(ch);
             }

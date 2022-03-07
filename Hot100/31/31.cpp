@@ -2,11 +2,12 @@
 
 /**
  * next permutation 模板题
-    1. 从后向前查找第一个相邻升序的元素对 (i,j), j = i + 1，满足 A[i] < A[j]。此时 [j,end) 必然是降序
-    2. 在 [j,end) 从后向前查找第一个满足 A[i] < A[k] 的 k。A[i]、A[k] 分别就是上文所说的「小数」、「大数」
-    3. 将 A[i] 与 A[k] 交换
-    4. 可以断定这时 [j,end) 必然是降序，逆置 [j,end)，使其升序
-    5. 如果在步骤 1 找不到符合的相邻元素对，说明当前 [begin,end) 为一个降序顺序，则直接跳到步骤 4
+ * 策略类似于贪心
+    1. 从后向前查找第一个相邻升序的元素对 (i,i+1), 满足 a[i] < a[i+1]。此时 [i+1,end) 必然是降序
+    2. 在 [i+1,end) 从后向前查找第一个满足 a[i] < a[k] 的 k。a[i]、a[k] 分别就是「小数」、「大数」
+    3. 将 a[i] 与 a[k] 交换
+    4. 可以断定这时 [i+1,end) 必然是降序，逆置 [i+1,end)，使其升序
+    5. 如果在步骤 1 找不到符合的相邻元素对，说明当前 [begin,end) 为一个降序顺序（特殊情况），则直接跳到步骤 4
  */
 class Solution
 {
@@ -40,6 +41,7 @@ public:
             }
         }
     }
+
     /* STL一行
     void nextPermutation(vector<int>& nums) {
         next_permutation(nums.begin(), nums.end());

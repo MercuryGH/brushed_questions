@@ -1,69 +1,86 @@
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <queue>
 #include <algorithm>
 #include <ctime>
 #include <iostream>
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 using std::vector;
 
-/**
- * 朴素滑动窗口 O(m(n - m))
- * 一趟滑动窗口 O(n - m)
- */
 class Solution
 {
-public:
-    vector<int> goodDaysToRobBank(vector<int> &s, int t)
+    vector<vector<int>> twoSumTarget(const vector<int> &nums, const int startIndex, const int target)
     {
-        const int n = s.size();
-        vector<int> res;
-        // 两个剪枝
-        if (2 * t + 1 > n)
-            return res;
-        if (t == 0)
+        const int n = nums.size();
+        int l = startIndex;
+        int r = n - 1;
+        vector<vector<int>> ans;
+        while (true)
         {
-            for (int i = 0; i < n; i++)
-                res.push_back(i);
-            return res;
-        }
-        int cnt1, cnt2;
-        cnt1 = 0; // 前面递增的个数
-        cnt2 = 0; // 后面递减的个数
-
-        for (int i = 1; i <= t; i++)
-        {
-            if (s[i] > s[i - 1])
-                cnt1++;
-        }
-        for (int i = t + 1; i <= t + t; i++)
-        {
-            if (s[i] < s[i - 1])
-                cnt2++;
-        }
-
-        for (int day = t, i = 0, j = 2 * t; ; )
-        {
-            if (cnt1 == 0 && cnt2 == 0)
-                res.push_back(day);
-
-            if (j + 1 == n)
+            if (l >= r)
+            {
                 break;
+            }
 
-            // 滑动一格
-            if (s[i] < s[i + 1])
-                cnt1--;
-            if (s[day] < s[day + 1])
-                cnt1++;
-            if (s[day] > s[day + 1])
-                cnt2--;
-            if (s[j + 1] < s[j])
-                cnt2++;
-            i++;
-            day++;
-            j++;
+            const int curL = nums[l];
+            const int curR = nums[r];
+            const int sum = curL + curR;
+            if (sum == target)
+            {
+                ans.push_back({nums[l], nums[r]});
+                while (l < r & nums[l] == curL)
+                {
+                    l++;
+                }
+                while (l < r && nums[r] == curL)
+                {
+                    r--;
+                }
+            }
+            else if (sum < target)
+            {
+                while (l < r && nums[l] == curL)
+                {
+                    l++;
+                }
+            }
+            else
+            {
+                while (l < r && nums[r] == curR)
+                {
+                    r--;
+                }
+            }
         }
-        return res;
+        return ans;
+    }
+
+public:
+    vector<int> twoSum(vector<int> &nums, int target)
+    {
+        const int n = nums.size();
+
+        std::unordered_map<int, vector<int>> valToIndex;
+        for (int i = 0; i < n; i++)
+        {
+            valToIndex[nums[i]].push_back(i);
+        }
+
+        std::sort(nums.begin(), nums.end());
+        vector<int> ansVal = twoSumTarget(nums, 0, target)[0];
+        vector<int> ansIndex = {
+            valToIndex[ansVal[0]][0],
+            valToIndex[ansVal[1]][0],
+        };
+        if (ansVal[0] == ansVal[1])
+        {
+            ansIndex = {
+                valToIndex[ansVal[0]][0],
+                valToIndex[ansVal[1]][1],
+            };
+        }
+
+        return ansIndex;
     }
 };
 

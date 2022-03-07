@@ -30,6 +30,8 @@ public:
 
     /**
      * DP算法
+     * 
+     * 太复杂一点也不优雅，不写了
      */
     bool isMatch_DP(string s, string p) {
 

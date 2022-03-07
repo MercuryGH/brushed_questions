@@ -8,6 +8,9 @@
  */
 class Solution
 {
+    /**
+     * 返回已排序数组 nums 的不同的 nums[l] + nums[r] = target 元组 (nums[l], nums[r]). 
+     */
     std::vector<std::vector<int>> twoSumTarget(const std::vector<int> &nums, const int start, const int target)
     {
         // nums 数组必须有序
