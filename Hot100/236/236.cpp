@@ -19,8 +19,6 @@ struct TreeNode
  */
 class BadSolution // 时间复杂度为 O(n log n) 的暴力算法
 {
-    bool found = false;
-
     static bool dfs(TreeNode *root, TreeNode *target) {
         if (root == nullptr) {
             return false;
@@ -33,16 +31,11 @@ class BadSolution // 时间复杂度为 O(n log n) 的暴力算法
 public:
     TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
     {
-        if (found) {
-            return root;
-        }
-
         if (root == nullptr) {
             return nullptr;
         }
-        // 如果p,q为根节点，则公共祖先为根节点
+        // 如果p,q为根节点，则公共祖先为根节点，找到
         if (root == p || root == q) {
-            found = true;
             return root;
         }
         // 如果p,q在左子树，则公共祖先在左子树查找
@@ -54,8 +47,7 @@ public:
             return lowestCommonAncestor(root->right, p, q);
         }
 
-        // 如果p,q分属两侧，则公共祖先为根节点
-        found = true;
+        // 如果p,q分属两侧，则公共祖先为根节点，找到
         return root;
     }
 };
@@ -89,4 +81,31 @@ public:
         dfs(root, p, q);  // assert return value == true
         return ans;
     }
+};
+
+/**
+ * 简洁明了，非常适合背诵的代码。时间复杂度也是最优的 O(n)
+ */
+class BeautifulSolution 
+{
+public:
+    TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+    {
+        if (root == nullptr || root == p || root == q) {
+            return root;
+        }
+        TreeNode *leftAns = lowestCommonAncestor(root->left, p, q);
+        TreeNode *rightAns = lowestCommonAncestor(root->right, p, q);
+        // 如果left为空，说明这两个节点在cur (root)结点的右子树上，我们只需要返回右子树查找的结果即可
+        if (leftAns == nullptr) {
+            return rightAns;
+        }
+        // 同上
+        if (rightAns == nullptr) {
+            return leftAns;
+        }
+        // 如果left和right都不为空，说明这两个节点一个在cur的左子树上一个在cur的右子树上，
+        // 我们只需要返回cur结点即可。
+        return root;
+    }    
 };

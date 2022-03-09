@@ -5,89 +5,48 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-using std::vector;
+#include <list>
+#include <string>
+using std::vector, std::string;
 
 class Solution
 {
-    vector<vector<int>> twoSumTarget(const vector<int> &nums, const int startIndex, const int target)
+public:
+    string longestCommonPrefix(vector<string> &strs)
     {
-        const int n = nums.size();
-        int l = startIndex;
-        int r = n - 1;
-        vector<vector<int>> ans;
-        while (true)
+        int ans = 0;
+        for (int i = 0; ; i++)
         {
-            if (l >= r)
-            {
+            const string &curStr = strs[0];
+            if (curStr.length() <= i) {
                 break;
             }
 
-            const int curL = nums[l];
-            const int curR = nums[r];
-            const int sum = curL + curR;
-            if (sum == target)
+            const char curChar = curStr[i];
+            for (const auto &str : strs)
             {
-                ans.push_back({nums[l], nums[r]});
-                while (l < r & nums[l] == curL)
-                {
-                    l++;
-                }
-                while (l < r && nums[r] == curL)
-                {
-                    r--;
+                if (str.length() <= i || str[i] != curChar) {
+                    goto END;
                 }
             }
-            else if (sum < target)
-            {
-                while (l < r && nums[l] == curL)
-                {
-                    l++;
-                }
-            }
-            else
-            {
-                while (l < r && nums[r] == curR)
-                {
-                    r--;
-                }
-            }
+            ans++;
         }
-        return ans;
-    }
-
-public:
-    vector<int> twoSum(vector<int> &nums, int target)
-    {
-        const int n = nums.size();
-
-        std::unordered_map<int, vector<int>> valToIndex;
-        for (int i = 0; i < n; i++)
-        {
-            valToIndex[nums[i]].push_back(i);
-        }
-
-        std::sort(nums.begin(), nums.end());
-        vector<int> ansVal = twoSumTarget(nums, 0, target)[0];
-        vector<int> ansIndex = {
-            valToIndex[ansVal[0]][0],
-            valToIndex[ansVal[1]][0],
-        };
-        if (ansVal[0] == ansVal[1])
-        {
-            ansIndex = {
-                valToIndex[ansVal[0]][0],
-                valToIndex[ansVal[1]][1],
-            };
-        }
-
-        return ansIndex;
+        END:
+        string str = strs[0];
+        str.resize(ans);
+        return str;
     }
 };
 
 int main()
 {
-    Solution s;
-    vector<int> nums = {6, 4, 3, 2, 7, 6, 2};
+    vector<int> v = {1, 2, 3, 4, 5};
+    int i = 1;
+    std::move(v.begin() + i, v.end(), v.begin());
+
+    for (const int num : v) {
+        std::cout << num << "\n";
+    }
 
     return 0;
 }

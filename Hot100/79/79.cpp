@@ -2,6 +2,10 @@
 using std::string;
 using std::vector;
 
+/**
+ * 单词搜索
+ * 基础棋盘DFS题目
+ */
 class Solution
 {
     const int dirs[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};

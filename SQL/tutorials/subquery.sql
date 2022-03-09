@@ -15,9 +15,18 @@ from OrderItems, Orders
 where OrderItems.order_num = Orders.order_num and
     OrderItems.item_price >= 10
 
-select cust_id, sum(item_price * quantity) as total_ordered
-from OrderItems, Orders
-where OrderItems.order_num = Orders.order_num
-group by cust_id
-order by total_ordered desc
 
+
+-- 返回产品名称和每一项产品的总订单数
+select prod_name, count(order_num) as orders
+from Products left join OrderItems
+on Products.prod_id = OrderItems.prod_id
+group by prod_name
+order by prod_name
+
+
+select Vendors.vend_id, count(prod_id) as prod_id
+from Vendors left join Products
+on Products.vend_id = Vendors.vend_id
+group by Vendors.vend_id
+order by Vendors.vend_id
