@@ -11,6 +11,7 @@ struct TreeNode
 };
 /**
  * DFS 求二叉树的高度
+ * 实际上是树型DP
  */
 class Solution
 {

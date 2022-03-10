@@ -74,9 +74,7 @@ public:
     }
 };
 
-using KeyType = int;
-using ValueType = int;
-
+template<typename KeyType=int, typename ValueType=int>
 class LRUCache
 {
     int capacity;

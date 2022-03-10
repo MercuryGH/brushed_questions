@@ -8,7 +8,7 @@ class Trie {
     static const int CHAR_NUM = 26;
 
     bool isEnd = false;
-    Trie *next[CHAR_NUM] = {nullptr};
+    Trie *next[CHAR_NUM]; // g++ 会初始化为空指针数组
 
 public:
     Trie() {
@@ -50,11 +50,3 @@ public:
         return true;
     }
 };
-
-/**
- * Your Trie object will be instantiated and called as such:
- * Trie* obj = new Trie();
- * obj->insert(word);
- * bool param_2 = obj->search(word);
- * bool param_3 = obj->startsWith(prefix);
- */

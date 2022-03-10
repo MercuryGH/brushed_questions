@@ -11,7 +11,7 @@ struct TreeNode
 };
 
 /**
- * 二叉树的直径。DFS暴力题
+ * 二叉树的直径。DFS暴力题，或者说其实是树形DP
  * key idea: 任意一条路径均可以被看作由某个节点为起点，从其左儿子和右儿子向下遍历的路径拼接得到。
  */
 class Solution
@@ -32,6 +32,6 @@ public:
     {
         this->ans = 1;
         depth(root);
-        return ans - 1;
+        return ans - 1; // 因为答案只取连接直径的边数，而ans记录的是连接直径的结点数，所以要 -1
     }
 };

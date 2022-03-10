@@ -36,8 +36,8 @@ class Solution
         //     (pHasRightChild && !qHasLeftChild) ||
         //     (!pHasLeftChild && qHasRightChild) ||
         //     (!pHasRightChild && qHasLeftChild))
-        const bool pqHasOuterChild = pHasLeftChild ^ qHasRightChild == 0; // 异或改写更简洁
-        const bool pqHasInnerChild = pHasRightChild ^ qHasLeftChild == 0;
+        const bool pqHasOuterChild = pHasLeftChild ^ qHasRightChild == false; // 异或改写更简洁
+        const bool pqHasInnerChild = pHasRightChild ^ qHasLeftChild == false;
         // 以下为卫语句
         if (p->val != q->val)
         {

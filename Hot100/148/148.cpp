@@ -53,7 +53,7 @@ class Solution
     /**
      * 两个返回值：小链表的头和大链表的头
      */
-    void getPartition(ListNode *pivot, ListNode *&lessHead, ListNode *&greaterHead) {
+    void getPartition(const ListNode *const pivot, ListNode *&lessHead, ListNode *&greaterHead) {
         ListNode *const lessDummyHead = new ListNode(0, nullptr);
         ListNode *const greaterDummyHead = new ListNode(0, nullptr);
         ListNode *less = lessDummyHead;
