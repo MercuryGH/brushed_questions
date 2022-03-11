@@ -7,70 +7,76 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <sstream>
 using std::vector, std::string;
 
 // using KeyType = int;
 // using ValueType = int;
 
-template<typename KeyType=int, typename ValueType=int>
-class LRUCache
-{
-    int capacity;
-    int curSize;
-    std::list<std::pair<KeyType, ValueType>> cache; // 相当于 ListNode
-    std::unordered_map<
-        KeyType,
-        std::list<std::pair<KeyType, ValueType>>::iterator // value 相当于 ListNode *
-    > lru;
-
+class Solution {
+    struct CharFreq {
+        char c;
+        int freq;
+        CharFreq(char c, int freq): c(c), freq(freq) {}
+    };
 public:
-    LRUCache(int capacity) : capacity(capacity), curSize(0)
-    {
-    }
+    string reorganizeString(string s) {
+        const auto cmp = [](const CharFreq charFreq1, const CharFreq charFreq2) {
+            return charFreq1.freq < charFreq2.freq; // 注意写成 <= 会错！！
+        };
+        std::priority_queue<
+            CharFreq, 
+            vector<CharFreq>,
+            decltype(cmp)
+        > q(cmp);  // 最大堆
 
-    ValueType get(KeyType key)
-    {
-        if (lru.find(key) == lru.end())
-        {
-            return -1;
+        std::unordered_map<char, int> freqHash;
+        for (const char c : s) {
+            freqHash[c]++;
         }
-        const auto nodeItr = lru[key];
-        const auto node = *nodeItr;
-        cache.erase(nodeItr);
-        cache.push_front(node); // 如果写成 *nodeItr 就会有BUG，因为已经被 erase 了！！
-        lru[key] = cache.begin();
-        return node.second;
-    }
+        for (char c = 'a'; c <= 'z'; c++) {
+            const int cFreq = freqHash[c];
+            if (cFreq > 0)
+                q.emplace(c, cFreq);
+        }
 
-    void put(KeyType key, ValueType value)
-    {
-        const auto newNode = std::make_pair(key, value);
-        if (lru.find(key) != lru.end())
-        { // 更新
-            cache.erase(lru[key]);
-            curSize--;
-        }
-        else
-        { // 添加
-            // < C++11，std::list 获取size() 的时间复杂度可能是 O(n) 的
-            // 但 C++11 必须是 O(1) 的
-            // 所以其实这里用 curSize 可能效率反而低
-            if (capacity == curSize)
-            { // 满了，要淘汰末尾的
-                lru.erase(cache.back().first);
-                cache.pop_back();
-                curSize--;
+        string ans;
+        while (true) {
+            if (q.size() <= 1) {
+                break;
+            }
+            CharFreq maxCharFreq = q.top();
+            q.pop();
+            CharFreq subMaxCharFreq = q.top();
+            q.pop();
+
+            // ans += maxCharFreq.c + subMaxCharFreq.c; // 错了，注意加号重载！！
+            ans += maxCharFreq.c;
+            ans += subMaxCharFreq.c;
+            
+            maxCharFreq.freq--;
+            subMaxCharFreq.freq--;
+            if (maxCharFreq.freq > 0) {
+                q.push(maxCharFreq);
+            }
+            if (subMaxCharFreq.freq > 0) {
+                q.push(subMaxCharFreq);
             }
         }
-        // 加新的
-        cache.push_front(newNode);
-        lru[key] = cache.begin();
-        curSize++;
+        if (q.size() == 1) {
+            CharFreq remainedCharFreq = q.top();
+            if (remainedCharFreq.freq > 1) {
+                return "";
+            }
+            ans += remainedCharFreq.c;
+        }
+        return ans;
     }
 };
 
 int main(int argc, char const *argv[])
 {
-    LRUCache<int, int> lru(2);
+    Solution s;
+    std::cout << s.reorganizeString("eqmeyggvp") << "\n";
     return 0;
 }
