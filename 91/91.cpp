@@ -1,20 +1,7 @@
-#include <algorithm>
-#include <ctime>
-#include <iostream>
-#include <queue>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-#include <list>
 #include <string>
-#include <sstream>
-#include <memory>
-using std::vector, std::string;
+#include <vector>
+using std::string, std::vector;
 
-/**
- * 简化路径
- * 字符串模拟题，用DFA做挺好，但也有很多细节，狗日的
- */
 class Solution
 {
 public:
@@ -51,11 +38,3 @@ public:
         return dp[0];
     }
 };
-
-int main(int argc, char const *argv[])
-{
-    Solution s;
-    std::cout << s.numDecodings("2101") << "\n";
-
-    return 0;
-}

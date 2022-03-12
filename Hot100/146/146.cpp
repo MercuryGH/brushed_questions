@@ -1,132 +1,130 @@
 #include <unordered_map>
 
 class SelfImplLRUCache {
-    struct LinkedNode {
-        int key, value;
-        LinkedNode *prev, *next;
-        LinkedNode(): key(0), value(0), prev(nullptr), next(nullptr) {}
-        LinkedNode(int k, int v): key(k), value(v), prev(nullptr), next(nullptr) {}
+    using KeyType = int;
+    using ValueType = int;
+
+    struct Entry {
+        Entry *prev;
+        Entry *next;
+        KeyType key;
+        ValueType value;
+        Entry(KeyType k, ValueType v): key(k), value(v), prev(nullptr), next(nullptr) {} 
+        Entry(): key(0), value(0), prev(nullptr), next(nullptr) {}
     };
 
-    std::unordered_map<int, LinkedNode *> lru;
-    LinkedNode *dummyHead; // 越靠近头，越频繁使用
-    LinkedNode *dummyTail; // 越靠近尾，越不频繁使用
-    int curSize;
+    std::unordered_map<KeyType, Entry *> lru;
     int capacity;
-
-    void addMru(LinkedNode *node) {
-        node->prev = dummyHead;
-        node->next = dummyHead->next;
-        dummyHead->next->prev = node;
-        dummyHead->next = node;
-    }
-    void updateMru(LinkedNode *node) {
-        this->removeNode(node);
-        this->addMru(node);
-    }
-    void removeNode(LinkedNode *node) {
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-    }
-    LinkedNode *removeLru() {
-        LinkedNode *tailNode = dummyTail->prev;
-        this->removeNode(tailNode);
-        return tailNode;
-    }
-    void checkSizeOverflow() {
-        if (this->curSize > this->capacity) {
-            LinkedNode *removed = this->removeLru();
-            lru.erase(removed->key);
-            delete removed;
-            this->curSize--;
-        }
-    }
+    int curSize;
+    Entry *const dummyHead = new Entry();
+    Entry *const dummyTail = new Entry();
 
 public:
     SelfImplLRUCache(int capacity): capacity(capacity), curSize(0) {
-        this->dummyHead = new LinkedNode();
-        this->dummyTail = new LinkedNode();
         dummyHead->next = dummyTail;
         dummyTail->prev = dummyHead;
     }
-    
-    int get(int key) {
+
+    ValueType get(KeyType key) {
         if (lru.find(key) == lru.end()) {
             return -1;
         }
-        LinkedNode *node = lru[key];
-        this->updateMru(node);
-        return node->value;
+
+        Entry *ptrEntry = lru.at(key);
+        Entry entry = *ptrEntry;
+        erase(ptrEntry);
+        insert_front(entry);
+        lru[key] = dummyHead->next;
+
+        return entry.value;
     }
-    
-    void put(int key, int value) {
+
+    void put(KeyType key, ValueType value) {
         if (lru.find(key) == lru.end()) {
-            LinkedNode *node = new LinkedNode(key, value);
-            lru[key] = node;
-            this->addMru(node);
-            this->curSize++;
-            this->checkSizeOverflow();
+            if (curSize >= capacity) {
+                lru.erase(dummyTail->prev->key);
+                erase_back();
+            } else {
+                curSize++;
+            }
+            insert_front(Entry(key, value));
         } else {
-            LinkedNode *node = lru[key];
-            node->value = value;
-            this->updateMru(node);
+            Entry *ptrEntry = lru.at(key);
+            Entry entry = *ptrEntry;
+            entry.value = value;
+            erase(ptrEntry);
+            insert_front(entry);
         }
+        lru[key] = dummyHead->next;
+    }
+private:
+    void erase(Entry *entry) { // 给定指针删除
+        entry->prev->next = entry->next;
+        entry->next->prev = entry->prev;
+        delete entry;
+    }
+    void insert_front(const Entry &entry) { // 在最前面插入
+        Entry *newEntry = new Entry(entry.key, entry.value);
+        dummyHead->next->prev = newEntry;
+
+        newEntry->next = dummyHead->next;
+        newEntry->prev = dummyHead;
+        dummyHead->next = newEntry;
+    }
+    void erase_back() { // 在最后面删除
+        Entry *toBeDeleted = dummyTail->prev;
+        erase(toBeDeleted);
     }
 };
 
-template<typename KeyType=int, typename ValueType=int>
 class LRUCache
 {
+    using KeyType = int;
+    using ValueType = int;
+    struct KvPair
+    {
+        KvPair(KeyType k, ValueType v): key(k), value(v) {}
+        KeyType key;
+        ValueType value;
+    };
+    std::list<KvPair> container;
+    std::unordered_map<KeyType, std::list<KvPair>::iterator> lru;
     int capacity;
-    int curSize;
-    std::list<std::pair<KeyType, ValueType>> cache; // 相当于 ListNode
-    std::unordered_map<
-        KeyType,
-        std::list<std::pair<KeyType, ValueType>>::iterator // value 相当于 ListNode *
-    > lru;
 
 public:
-    LRUCache(int capacity) : capacity(capacity), curSize(0)
-    {
-    }
+    LRUCache(int capacity): capacity(capacity) {}
 
-    ValueType get(KeyType key)
-    {
-        if (lru.find(key) == lru.end())
-        {
+    ValueType get(KeyType key) {
+        if (lru.find(key) == lru.end()) { // 找不到
             return -1;
         }
-        const auto nodeItr = lru[key];
-        const auto node = *nodeItr;
-        cache.erase(nodeItr);
-        cache.push_front(node); // 如果写成 *nodeItr 就会有BUG，因为已经被 erase 了！！
-        lru[key] = cache.begin();
-        return node.second;
+
+        // 找得到
+        auto getKvPairItr = lru.at(key);
+        KvPair getKvPair = *getKvPairItr;
+        container.erase(getKvPairItr);
+
+        container.push_front(getKvPair);
+        lru[key] = container.begin();
+
+        return getKvPair.value;
     }
 
-    void put(KeyType key, ValueType value)
-    {
-        const auto newNode = std::make_pair(key, value);
-        if (lru.find(key) != lru.end())
-        { // 更新
-            cache.erase(lru[key]);
-            curSize--;
+    void put(KeyType key, ValueType value) {
+        if (lru.find(key) == lru.end()) {
+            if (container.size() >= capacity) {
+                lru.erase(container.back().key);
+                container.pop_back();
+            } 
+            container.emplace_front(key, value);
+        } else {
+            auto getKvPairItr = lru.at(key);
+            KvPair getKvPair = *getKvPairItr;
+            getKvPair.value = value;
+
+            container.erase(getKvPairItr);
+            container.push_front(getKvPair);
         }
-        else
-        { // 添加
-            // < C++11，std::list 获取size() 的时间复杂度可能是 O(n) 的
-            // 但 C++11 必须是 O(1) 的
-            // 所以其实这里用 curSize 可能效率反而低
-            if (capacity == curSize)
-            { // 满了，要淘汰末尾的
-                lru.erase(cache.back().first);
-                cache.pop_back();
-                curSize--;
-            }
-        }
-        // 加新的
-        cache.push_front(newNode);
-        lru[key] = cache.begin();
-        curSize++;
+        lru[key] = container.begin();
     }
 };

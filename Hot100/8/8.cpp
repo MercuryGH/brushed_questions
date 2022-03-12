@@ -31,7 +31,6 @@ class Solution {
         State curState = START;
         void getChar(char c) {
             const State nextState = table.at(curState)[getNextStateIndex(c)];
-            curState = nextState;
             switch (nextState) {
                 case NUMBER: {
                     ans *= 10;
@@ -53,6 +52,7 @@ class Solution {
                 }
                 default: break;
             }
+            curState = nextState;
         }
 
         int getNextStateIndex(char c) {
