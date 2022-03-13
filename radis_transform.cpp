@@ -11,9 +11,6 @@ public:
      * 返回 n = l^0 * ans[0] + l^1 * ans[1] + ...
      */
     vector<int> transformRadis(const vector<int> &coefs, const int k, const int l) {
-        const int len = coefs.size();
-        vector<int> ans;
-
         int n = 0;
         int acc = 1;
         for (const int coef : coefs) {
@@ -21,6 +18,7 @@ public:
             acc *= k;
         }
 
+        vector<int> ans;
         while (true) {
             ans.push_back(n % l);
             n /= l;
@@ -31,6 +29,23 @@ public:
         return ans;
     }
 };
+
+int solution(vector<int> &A) {
+    vector<bool> hash(100010, 0);
+    for (const int num : A) {
+        if (num > 0 && num < 100010) {
+            hash[num] = 1;
+        }
+    }
+
+    for (int i = 1; ; i++) {
+        if (hash[i] == 0) {
+            return i;
+        }
+    }
+    return 1;
+}
+
 
 int main() {
     Solution s;

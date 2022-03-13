@@ -4,6 +4,7 @@
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
+#include <set>
 #include <vector>
 #include <list>
 #include <string>
@@ -11,51 +12,62 @@
 #include <memory>
 using std::vector, std::string;
 
-/**
- * 简化路径
- * 字符串模拟题，用DFA做挺好，但也有很多细节，狗日的
- */
+using ll = long long;
+int n, m;
+
+struct Item
+{
+    int originPrice;
+    int curPrice;
+    int happyValue;
+    Item() {}
+    Item(int originPrice, int curPrice, int happyValue) : originPrice(originPrice), curPrice(curPrice), happyValue(happyValue) {}
+};
+
 class Solution
 {
 public:
-    int numDecodings(string s)
+    ll getMaximumHappyValue(const vector<Item> &items)
     {
-        const int n = s.length();
-        if (s[0] == '0') { // 前缀为0，答案必为0
-            return 0;
+        int originPriceSum = 0;
+        for (const auto &item : items) {
+            originPriceSum += item.originPrice;
         }
-        if (n == 1) {
-            return s[0] != '0';
-        }
+        const int maxM = std::max(m, (originPriceSum + m) / 2);
 
-        vector<int> dp(n);
-        dp[n - 1] = s[n - 1] == '0' ? 0 : 1;
-        if (s[n - 2] == '1' || s[n - 2] == '2' && s[n - 1] <= '6') {
-            dp[n - 2] = dp[n - 1] + 1;
-        } else if (s[n - 2] != '0') {
-            dp[n - 2] = dp[n - 1];
-        } else {
-            dp[n - 2] = 0;
-        }
+        vector<vector<ll>> dp(n, vector<ll>(maxM + 1, 0));
 
-        for (int i = n - 3; i >= 0; i--) {
-            if (s[i] == '1' || s[i] == '2' && s[i + 1] <= '6') {
-                dp[i] = dp[i + 1] + dp[i + 2];
-            } else if (s[i] != '0') {
-                dp[i] = dp[i + 1];
-            } else {
-                dp[i] = 0;
+        int originPriceHelper = 0;
+        for (ll i = 1; i < n; i++) {
+            for (ll j = 0; j <= maxM; j++) {
+                const int curItemPrice = items[i].curPrice;
+                if (j >= curItemPrice) {
+                    const int curItemHappyValue = items[i].happyValue;
+                    dp[i][j] = std::max(dp[i - 1][j], dp[i][j - curItemPrice] + curItemHappyValue);
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
             }
         }
-
-        return dp[0];
+        return dp[n - 1][maxM];
     }
 };
 
-int main(int argc, char const *argv[])
+int main()
 {
+    std::cin >> n >> m;
+    vector<Item> items(n);
+    for (int i = 0; i < n; i++)
+    {
+        int originPrice, curPrice, happyValue;
+        std::cin >> originPrice >> curPrice >> happyValue;
+        items[i] = Item(originPrice, curPrice, happyValue);
+    }
+
     Solution s;
-    std::cout << s.numDecodings("2101") << "\n";
+    const ll ans = s.getMaximumHappyValue(items);
+
+    std::cout << ans << "\n";
 
     return 0;
 }

@@ -1,44 +1,38 @@
 from cgitb import small
 from typing import List
 
-class Solution:
-    @staticmethod
-    def calcConsecutiveSum(start: int, count: int):
-        return count * (start + start + count - 1) // 2
 
-    def minimalKSum(self, nums: List[int], k: int) -> int:
-        n = len(nums)
-        if n == 0:
-            numsSum = 0
-            minNum = 1
-            maxNum = 0
-        else:
-            nums.sort()
-            numsSum = sum(nums)
-            minNum = nums[0]
-            maxNum = nums[-1]
+def minWindow(self, s: str, t: str) -> str:
+    need = collections.defaultdict(int)
+    for c in t:
+        need[c] += 1
+    needCnt = len(t)
+    i = 0
+    res = (0, float('inf'))
+    for j, c in enumerate(s):
+        if need[c] > 0:
+            needCnt -= 1
+        need[c] -= 1
+        if needCnt == 0:  # 步骤一：滑动窗口包含了所有T元素
+            while True:  # 步骤二：增加i，排除多余元素
+                c = s[i]
+                if need[c] == 0:
+                    break
+                need[c] += 1
+                i += 1
+            if j-i < res[1]-res[0]:  # 记录结果
+                res = (i, j)
+            need[s[i]] += 1  # 步骤三：i增加一个位置，寻找新的满足条件滑动窗口
+            needCnt += 1
+            i += 1
+    # 如果res始终没被更新过，代表无满足条件的结果
+    return '' if res[1] > len(s) else s[res[0]:res[1]+1]
 
-        ans = 0
-        smallRange = minNum - 1 # 从1数起加 smallRange 个数
-        ans += Solution.calcConsecutiveSum(1, min(smallRange, k))
-        k = max(k - smallRange, 0)
-        for i in range(n - 1):
-            rangeStart: int = nums[i] + 1
-            rangeEnd: int = nums[i + 1] - 1
-            if rangeStart > rangeEnd:
-                continue
-            # 从rangeStart counts rangeEnd - rangeStart
-            rangeCount = rangeEnd - rangeStart + 1
-            ans += Solution.calcConsecutiveSum(rangeStart, min(rangeCount, k))
-            k = max(k - rangeCount, 0)
-
-        ans += Solution.calcConsecutiveSum(nums[-1] + 1, k)
-        return ans
 
 s = Solution()
 
-nums = [1,4,25,10,25]
+nums = [1, 4, 25, 10, 25]
 k = 2
-nums = [5,6]
+nums = [5, 6]
 k = 6
 print(s.minimalKSum(nums, k))
