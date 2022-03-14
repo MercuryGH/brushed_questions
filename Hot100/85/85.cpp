@@ -1,17 +1,7 @@
 #include <algorithm>
-#include <ctime>
-#include <iostream>
-#include <list>
-#include <memory>
-#include <queue>
 #include <stack>
-#include <set>
-#include <sstream>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
-using std::vector, std::string;
+using std::vector;
 
 class Solution
 {
@@ -42,38 +32,8 @@ class Solution
         return ans;
     }
 
-    int largestSquareArea(const vector<int> &heights)
-    {
-        const int n = heights.size() + 2;
-        vector<int> pivotedHeights(n);
-        pivotedHeights[0] = 0;
-        pivotedHeights[n - 1] = 0;
-        std::copy(heights.begin(), heights.end(), pivotedHeights.begin() + 1);
-
-        std::stack<int> s;
-
-        int ans = 0;
-        for (int i = 0; i < n; i++)
-        {
-            while (s.empty() == false && pivotedHeights[i] < pivotedHeights[s.top()])
-            { // 必须加 s.empty() == false
-                const int topElement = s.top();
-                s.pop();
-                const int leftLessIndex = s.top() + 1; // 开区间左端点为 s.top()，因此闭区间左端点为 s.top() + 1
-                const int rightLessIndex = i - 1;      // 开区间右端点为 i，因此闭区间右端点为 i - 1
-                if (rightLessIndex - leftLessIndex + 1 >= pivotedHeights[topElement])
-                {
-                    const int area = pivotedHeights[topElement] * pivotedHeights[topElement];
-                    ans = std::max(ans, area);
-                }
-            }
-            s.push(i);
-        }
-        return ans;
-    }
-
 public:
-    int maximalSquare(vector<vector<char>> &matrix)
+    int maximalRectangle(vector<vector<char>> &matrix)
     {
         const int n = matrix.size();
         const int m = matrix[0].size();
@@ -93,8 +53,9 @@ public:
                     heights[j] = 0;
                 }
             }
-            ans = std::max(ans, largestSquareArea(heights));
+            ans = std::max(ans, largestRectangleArea(heights));
         }
         return ans;
     }
 };
+
