@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <ctime>
+#include <cmath>
 #include <iostream>
 #include <list>
 #include <memory>
@@ -16,30 +17,24 @@ using std::vector, std::string;
 class Solution
 {
 public:
-    string largestNumber(vector<int> &nums)
+    int lengthOfLIS(vector<int> &nums)
     {
-        vector<string> numStrs;
-        for (const int num : nums) {
-            numStrs.push_back(std::to_string(num));
-        }
+        const int n = nums.size();
+        vector<int> dp(n, 1);
 
-        const auto cmp = [](string a, string b)
+        int ans = 0;
+        for (int i = 0; i < n; i++)
         {
-            return a + b > b + a;
-        };
-        std::sort(numStrs.begin(), numStrs.end(), cmp);
-
-        string ans;
-        for (const auto &numStr : numStrs)
-        {
-            ans += numStr;
+            for (int j = 0; j < i; j++)
+            {
+                if (nums[j] < nums[i])
+                {
+                    dp[i] = std::max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = std::max(ans, dp[i]);
         }
 
-        int k = 0;
-        while (k < ans.length() - 1 && ans[k] == '0') {
-            k++; // 消除前导零
-        }
-
-        return ans.substr(k);
+        return ans;
     }
 };
