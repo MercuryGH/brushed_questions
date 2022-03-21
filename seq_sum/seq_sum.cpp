@@ -23,12 +23,12 @@ using std::vector, std::string;
  */
 class Solution
 {
-    bool isSquare(int num)
+    bool isSquare(long long num)
     {
-        int sqrtNum = std::sqrt(num);
+        long long sqrtNum = std::sqrt(num);
         return sqrtNum * sqrtNum == num;
     }
-    bool isOdd(int num)
+    bool isOdd(long long num)
     {
         return num % 2 == 1;
     }
@@ -36,27 +36,25 @@ public:
     vector<vector<int>> findContinuousSequence(int target)
     {
         vector<vector<int>> ans;
-        for (int k = target / 2; k >= 1; k--)
+        for (long long k = 1; k <= target / 2; k++)
         {
-            const int delta = (2 * k - 1) * (2 * k - 1) + 8 * target;
+            const long long delta = (2 * k - 1) * (2 * k - 1) + 8 * target;
             if (isSquare(delta) == false)
             {
                 continue;
             }
-            const int nominator = 1 - 2 * k + std::sqrt(delta);
+            const long long nominator = 1 - 2 * k + std::sqrt(delta);
             if (isOdd(nominator))
             {
                 continue;
             }
-            const int l = nominator / 2;
-            std::cout << k << " "  << l << "\n";
+            const long long l = nominator / 2;
 
             const int sum = l * (2 * k + l - 1) / 2;
-            std::cout << sum << "\n";
             if (sum == target)
             {
                 vector<int> curAns;
-                for (int i = k; i <= l; i++)
+                for (int i = k; i < k + l; i++)
                 {
                     curAns.push_back(i);
                 }
@@ -66,9 +64,3 @@ public:
         return ans;
     }
 };
-
-int main()
-{
-    Solution s;
-    s.findContinuousSequence(9);
-}
