@@ -9,7 +9,7 @@
 class Solution
 {
 public:
-    bool isValid(std::string s)
+    bool isBalance(std::string s)
     {
         int n = s.size();
         if (n % 2 == 1)  // 可以提前结束
