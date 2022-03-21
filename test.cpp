@@ -4,9 +4,9 @@
 #include <list>
 #include <memory>
 #include <queue>
-#include <stack>
 #include <set>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -16,30 +16,19 @@ using std::vector, std::string;
 class Solution
 {
 public:
-    string largestNumber(vector<int> &nums)
+    int candy(vector<int> &ratings)
     {
-        vector<string> numStrs;
-        for (const int num : nums) {
-            numStrs.push_back(std::to_string(num));
-        }
-
-        const auto cmp = [](string a, string b)
-        {
-            return a + b > b + a;
-        };
-        std::sort(numStrs.begin(), numStrs.end(), cmp);
-
-        string ans;
-        for (const auto &numStr : numStrs)
-        {
-            ans += numStr;
-        }
-
-        int k = 0;
-        while (k < ans.length() - 1 && ans[k] == '0') {
-            k++; // 消除前导零
-        }
-
-        return ans.substr(k);
     }
 };
+
+int main()
+{
+    // int *a[10] = {nullptr};
+    int a[10] = {1};
+
+    bool same = a[0] == a[1];
+
+    std::cout << same << "\n";
+
+    return 0;
+}
