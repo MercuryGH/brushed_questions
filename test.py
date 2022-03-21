@@ -1,6 +1,5 @@
-from cgitb import small
+import collections
 from typing import List
-
 
 def minWindow(self, s: str, t: str) -> str:
     need = collections.defaultdict(int)
@@ -29,10 +28,7 @@ def minWindow(self, s: str, t: str) -> str:
     return '' if res[1] > len(s) else s[res[0]:res[1]+1]
 
 
-s = Solution()
-
 nums = [1, 4, 25, 10, 25]
 k = 2
 nums = [5, 6]
 k = 6
-print(s.minimalKSum(nums, k))

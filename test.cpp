@@ -1,6 +1,6 @@
 #include <algorithm>
-#include <ctime>
 #include <cmath>
+#include <ctime>
 #include <iostream>
 #include <list>
 #include <memory>
@@ -16,32 +16,68 @@ using std::vector, std::string;
 
 class Solution
 {
-public:
-    int lengthOfLIS(vector<int> &nums)
+    // nums sorted
+    int twoSumClosest(const vector<int> &nums, int startIndex, int target)
     {
         const int n = nums.size();
-        vector<int> dp(n, 1);
+
+        int l = startIndex;
+        int r = n - 1;
+        int minDiff = INT_MAX; // 如果答案的绝对值更小，则更新
+        while (true)
+        {
+            if (l >= r)
+            {
+                break;
+            }
+
+            const int curSum = nums[l] + nums[r];
+            const int diff = curSum - target; // 真正的差值
+            if (std::abs(diff) < std::abs(minDiff))
+            {
+                minDiff = diff;
+            }
+
+            if (curSum == target)
+            {
+                l++;
+                r--;
+            }
+            else if (curSum < target)
+            {
+                l++;
+            }
+            else
+            {
+                r--;
+            }
+        }
+        return minDiff;
+    }
+
+public:
+    int threeSumClosest(vector<int> &nums, int target)
+    {
+        std::sort(nums.begin(), nums.end());
+        const int n = nums.size();
 
         int ans = 0;
+        int minThreeSumDiff = INT_MAX;
         for (int i = 0; i < n; i++)
         {
-            for (int j = 0; j < i; j++)
+            int minDiff = twoSumClosest(nums, i + 1, target - nums[i]);
+            if (std::abs(minDiff) < std::abs(minThreeSumDiff))
             {
-                if (nums[j] < nums[i])
-                {
-                    dp[i] = std::max(dp[i], dp[j] + 1);
-                }
+                minThreeSumDiff = minDiff;
+                ans = target + minDiff;
             }
-            ans = std::max(ans, dp[i]);
         }
-
         return ans;
     }
 };
 
 int main()
 {
-    // int *a[10] = {nullptr};
     int a[10] = {1};
 
     bool same = a[0] == a[1];

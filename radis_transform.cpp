@@ -30,23 +30,6 @@ public:
     }
 };
 
-int solution(vector<int> &A) {
-    vector<bool> hash(100010, 0);
-    for (const int num : A) {
-        if (num > 0 && num < 100010) {
-            hash[num] = 1;
-        }
-    }
-
-    for (int i = 1; ; i++) {
-        if (hash[i] == 0) {
-            return i;
-        }
-    }
-    return 1;
-}
-
-
 int main() {
     Solution s;
 
