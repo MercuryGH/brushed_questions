@@ -1,26 +1,23 @@
 #include <algorithm>
-#include <cmath>
 #include <ctime>
+#include <cmath>
 #include <iostream>
 #include <list>
 #include <memory>
 #include <queue>
+#include <stack>
 #include <set>
 #include <sstream>
-#include <stack>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 using std::vector, std::string;
 
-int main()
+class Solution
 {
-    int a[10] = {1};
-
-    bool same = a[0] == a[1];
-
-    std::cout << same << "\n";
-
-    return 0;
-}
+public:
+    int findMinStep(string board, string hand)
+    {
+    }
+};
