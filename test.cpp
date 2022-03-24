@@ -17,15 +17,24 @@ using std::vector, std::string;
 class Solution
 {
     static constexpr int INF = 0x3f3f3f3f;
+
 public:
     int jump(vector<int> &nums)
     {
         const int n = nums.size();
         vector<int> dp(n, INF);
         dp[0] = 0;
-        for (int i = 0; i < n; i++) {
-            const int maxStep = nums[i];
+
+        int maxReach = 0;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = maxReach; j <= i + nums[i]; j++)
+            {
+                dp[j] = dp[i] + 1;
+            }
+            maxReach = std::max(maxReach, i + nums[i]);
         }
+        return dp[n - 1];
     }
 };
 
