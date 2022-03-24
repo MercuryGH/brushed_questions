@@ -42,24 +42,4 @@ public:
         }
         return stk.empty();
     }
-
-    bool isBalanceCount(std::string s)
-    {
-        int n = s.size();
-        if (n % 2 == 1) // 可以提前结束
-        {
-            return false;
-        }
-
-        const std::unordered_map<char, char> pairs = {
-            {')', '('},
-            {']', '['},
-            {'}', '{'}};
-
-        int cnt[256] = {0};
-        for (const char c : s)
-        {
-            
-        }
-    }
 };

@@ -14,13 +14,24 @@
 #include <vector>
 using std::vector, std::string;
 
+class Solution
+{
+    static constexpr int INF = 0x3f3f3f3f;
+public:
+    int jump(vector<int> &nums)
+    {
+        const int n = nums.size();
+        vector<int> dp(n, INF);
+        dp[0] = 0;
+        for (int i = 0; i < n; i++) {
+            const int maxStep = nums[i];
+        }
+    }
+};
+
 int main()
 {
-    int a[10] = {1};
-
-    bool same = a[0] == a[1];
-
-    std::cout << same << "\n";
-
+    int a = 2;
+    std::cout << (!a) << "\n";
     return 0;
 }
