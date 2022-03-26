@@ -23,6 +23,10 @@ public:
 
     int pop()
     {
+        if (empty()) {
+            return -1;
+        }
+
         if (s2.empty())
         {
             while (s1.empty() == false)

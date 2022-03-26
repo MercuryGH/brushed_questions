@@ -9,14 +9,14 @@ using std::vector;
 class Solution {
     int n;
     
-    void dfs(const vector<int> &nums, vector<vector<int>> &ansSet, vector<int> &curSet, int curIndex) {
-        if (curIndex == n) {
+    void dfs(const vector<int> &nums, vector<vector<int>> &ansSet, vector<int> &curSet, int index) {
+        if (index == n) {
             ansSet.push_back(curSet);
             return;
         }
 
         // 通用层级 DFS
-        for (int i = curIndex; i <= n; i++) {
+        for (int i = index; i <= n; i++) {
             if (i == n) { // 选了个空集，特判
                 dfs(nums, ansSet, curSet, i);
             } else {

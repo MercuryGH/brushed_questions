@@ -36,8 +36,32 @@ $$
 f_i = f_{j} + 1,
 $$
 
-其中$j = \min\{[1, i) : j + a_j \geq i \}$。
+其中$j = \min\{j \in [1, i) : j + a_j \geq i \}$。
 
 于是，我们用一个线性扫描，每次贪心地更新当前格子能跳到的所有$f_i$即可，而且，**如果该格子已经被更早地更新过，那么我们便不再关心它**。这样一来，每个格子被写入$f_i$的次数恰好就是$1$次，因此时间复杂度为$O(n)$。
 
 实现这个贪心策略，只需维护一个“当前能跳到的最远距离”变量即可。
+
+```cpp
+int jump(vector<int> &nums)
+{
+    const int n = nums.size();
+    vector<int> dp(n, INF);
+    dp[0] = 0;
+
+    int maxReach = 0;
+    for (int i = 0; i < n; i++)
+    {
+        const int curReach = std::min(n - 1, i + nums[i]);
+        if (curReach > maxReach)
+        {
+            for (int j = maxReach + 1; j <= curReach; j++)
+            {
+                dp[j] = dp[i] + 1;
+            }
+            maxReach = curReach;
+        }
+    }
+    return dp[n - 1];
+}
+```
