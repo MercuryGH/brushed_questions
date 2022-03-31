@@ -14,6 +14,46 @@
 #include <vector>
 using std::vector, std::string;
 
+class Solution
+{
+    bool check(const vector<int> &nums, int mid)
+    {
+        if (nums[mid] == mid)
+        { // left
+            return true;
+        }
+        return false;
+    }
+
+public:
+    int missingNumber(vector<int> &nums) // nums is sorted
+    {
+        const int n = nums.size();
+        int l = 0;
+        int r = n - 1;
+        int ans = 0;
+        while (true)
+        {
+            if (l > r)
+            {
+                break;
+            }
+
+            const int mid = (l + r) / 2;
+            if (check(nums, mid))
+            {
+                l = mid + 1;
+                ans = mid + 1;
+            }
+            else
+            {
+                r = mid - 1;
+            }
+        }
+        return ans;
+    }
+};
+
 int main()
 {
     bool b = false;
