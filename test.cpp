@@ -16,41 +16,71 @@ using std::vector, std::string;
 
 class Solution
 {
-    bool check(const vector<int> &nums, int mid)
+    // 动态规划 O(nk)，超时
+    /*
+    int dpAt(string s, int k, char c)
     {
-        if (nums[mid] == mid)
-        { // left
-            return true;
-        }
-        return false;
-    }
-
-public:
-    int missingNumber(vector<int> &nums) // nums is sorted
-    {
-        const int n = nums.size();
-        int l = 0;
-        int r = n - 1;
-        int ans = 0;
-        while (true)
+        for (int i = 2; i <= n; i++)
         {
-            if (l > r)
+            for (int j = 0; j <= k; j++)
             {
-                break;
-            }
-
-            const int mid = (l + r) / 2;
-            if (check(nums, mid))
-            {
-                l = mid + 1;
-                ans = mid + 1;
-            }
-            else
-            {
-                r = mid - 1;
+                if (s[i] == c)
+                {
+                    dp[i][j] = dp[i - 1][j] + 1;
+                }
+                else if (j > 0)
+                {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                ans = std::max(ans, dp[i][j]);
             }
         }
         return ans;
+    }
+    */
+    int longestCs(string answerKey, int k, char c)
+    {
+        const int n = answerKey.size();
+        int l = 0;
+        int r = 0;
+        int ans = 0;
+        int windowZeroNum = 0;
+        while (true)
+        {
+            if (r >= n)
+            {
+                break;
+            }
+            if (answerKey[r] == c)
+            {
+                windowZeroNum++;
+            }
+            if (windowZeroNum > k)
+            {
+                while (true)
+                {
+                    if (answerKey[l] == c)
+                    {
+                        windowZeroNum--;
+                    }
+                    l++;
+                    if (windowZeroNum == k)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            ans = std::max(ans, r - l + 1);
+            r++;
+        }
+        return ans;
+    }
+
+public:
+    int maxConsecutiveAnswers(string answerKey, int k)
+    {
+        return std::max(longestCs(answerKey, k, 'T'), longestCs(answerKey, k, 'F'));
     }
 };
 
