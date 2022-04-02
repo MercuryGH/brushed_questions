@@ -14,306 +14,91 @@
 #include <vector>
 using std::vector, std::string;
 
-struct Operator;
-struct Number;
-struct Bracket;
-
-struct Token
+struct TreeNode
 {
-    virtual void performInConvertion(vector<Token *> &result, std::stack<Operator *> &s) = 0;
-    virtual void performInEvaluaion(std::stack<Number *> &s) = 0;
-    virtual void print() const = 0;
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-struct Number : Token
-{
-    int value;
-    Number(int value) : value(value) {}
-
-    // 数，直接输出
-    virtual void performInConvertion(vector<Token *> &result, std::stack<Operator *> &s) override
-    {
-        result.push_back(this);
-    }
-    virtual void performInEvaluaion(std::stack<Number *> &s) override
-    {
-        s.push(this);
-    }
-    virtual void print() const override
-    {
-        std::cout << value << "\n";
-    }
-};
-
-struct Operator : Token
-{
-    char op;
-    Operator(char op) : op(op) {}
-
-    // 维护单调栈
-    // 栈顶的运算符优先级高
-    virtual void performInConvertion(vector<Token *> &result, std::stack<Operator *> &s) override
-    {
-        while (true)
-        {
-            if (s.empty() == true)
-            {
-                break;
-            }
-            Operator *top = s.top();
-            if (top->op == '(') // 与 s.empty() 等价
-            {
-                break;
-            }
-            if (top->getPriority() < this->getPriority())
-            {
-                break;
-            }
-
-            s.pop();
-            result.push_back(top);
-        }
-        s.push(this);
-    }
-    virtual void performInEvaluaion(std::stack<Number *> &s) override
-    {
-        Number *a1 = s.top();
-        s.pop();
-        if (s.empty() == true && op == '-') // 一操作数。实际上根本不可能走这一分支
-        {
-            a1->value = -a1->value;
-            s.push(a1);
-        }
-        else // 二操作数
-        // 实际上，以下操作都可以简化为只 pop 一次，效率更高
-        {
-            Number *a2 = s.top();
-            s.pop();
-
-            Number *res = nullptr;
-            switch (op)
-            {
-            case '+':
-                res = new Number(a2->value + a1->value);
-                break;
-            case '-':
-                res = new Number(a2->value - a1->value);
-                break;
-            case '*':
-                res = new Number(a2->value * a1->value);
-                break;
-            case '/':
-                res = new Number(a2->value / a1->value);
-                break;
-            default:
-                break;
-            }
-            delete a1;
-            delete a2;
-            s.push(res);
-        }
-    }
-    virtual void print() const override
-    {
-        std::cout << op << "\n";
-    }
-    int getPriority() const
-    {
-        if (op == '+' || op == '-')
-        {
-            return 1;
-        }
-        else if (op == '*' || op == '/')
-        {
-            return 2;
-        }
-        return 0;
-    }
-};
-
-struct Bracket : Operator
-{
-    Bracket(char op) : Operator(op) {}
-
-    virtual void performInConvertion(vector<Token *> &result, std::stack<Operator *> &s) override
-    {
-        if (op == '(')
-        {
-            s.push(this);
-        }
-        else if (op == ')')
-        {
-            // 右括号，pop直到 ( 被弹出
-            // 如果栈为空，也没有 (，说明括号不匹配（未处理此情况）
-            while (s.empty() == false)
-            {
-                Operator *top = s.top();
-                s.pop();
-                if (top->op == '(')
-                {
-                    break;
-                }
-                result.push_back(top);
-            }
-        }
-    }
-
-    // 后缀表达式不含括号，不用实现
-    virtual void performInEvaluaion(std::stack<Number *> &s) override
-    {
-    }
-    virtual void print() const override
-    {
-        std::cout << op << "\n";
-    }
-};
-
+/**
+ * 从前序与中序遍历序列构造二叉树
+ * 超经典题，建议背诵。
+ * 做题时一定要画图
+ */
 class Solution
 {
-public:
-    int calculate(string s)
+    std::unordered_map<int, int> inOrderIndexMap;  // 从中序遍历数组的元素val到其下标的哈希
+
+    /**
+     * @brief 递归构建二叉树
+     * 
+     * @param preorder 先序遍历的完整数组
+     * @param inorder 中序遍历的完整数组
+     * @param preL 当前栈帧关心的先序遍历的子数组的开始下标（闭区间）
+     * @param preR 当前栈帧关心的先序遍历的子数组的结束下标（闭区间）
+     * @param inL 同上
+     * @param inR 同上
+     * @return TreeNode* 根结点
+     * 
+     * 注意：本方法没有建立哈希表加速，因为preorder, inorder中可能存在重复值
+     */
+    TreeNode *dfs(const vector<int> &preorder, const vector<int> &inorder)
     {
-        vector<Token *> tokens = lex(s);
+        if (preorder.empty() || inorder.empty()) {
+            return nullptr;
+        }
 
-        vector<Token *> postFix = convert2PostFix(tokens);
-        // for (const auto token : postFix) {
-        //     token->print();
-        // }
+        const int rootVal = preorder[0];
+        const int inRootIndex = findIndex(inorder, rootVal);  // 中序遍历中，根的位置
 
-        return getResultFromPostFix(postFix);
+        TreeNode *root = new TreeNode(rootVal);  // 用val构建根
+
+        vector<int> leftPreorder;
+        vector<int> rightPreorder;
+        vector<int> leftInorder;
+        vector<int> rightInorder;
+        std::move(preorder.begin() + 1, preorder.begin() + inRootIndex + 1, leftPreorder.begin());
+        std::move(preorder.begin() + inRootIndex + 1, preorder.end(), rightPreorder.begin());
+        std::move(inorder.begin(), inorder.begin() + inRootIndex, leftInorder.begin());
+        std::move(inorder.begin() + inRootIndex + 1, inorder.end(), rightInorder.begin());
+
+        root->left = dfs(leftPreorder, leftInorder);
+        root->right = dfs(rightPreorder, rightInorder);
+        return root;
     }
 
-private:
-    static bool isOperator(const char c)
-    {
-        return c == '+' || c == '-' || c == '*' || c == '/';
-    }
-    static bool isBracket(const char c)
-    {
-        return c == '(' || c == ')';
-    }
-
-    // 词法分析（轻量级DFA）
-    vector<Token *> lex(string s)
-    {
-        int n = s.length();
-        vector<Token *> tokens;
-
-        bool readingNumber = false;
-        int readNumber = 0;
-        for (const char c : s)
-        {
-            if (isdigit(c))
-            {
-                readingNumber = true;
-                readNumber *= 10;
-                readNumber += (c - '0');
-            }
-            else
-            {
-                if (readingNumber)
-                {
-                    tokens.push_back(new Number(readNumber));
-                    readingNumber = false;
-                    readNumber = 0;
-                }
-                if (isBracket(c))
-                {
-                    tokens.push_back(new Bracket(c));
-                }
-                else if (isOperator(c))
-                {
-                    // 不太优雅：为了避免将 - 当作一元运算符解释，在一元的 - 前面插入一个 0
-                    if (c == '-')
-                    {
-                        if (tokens.empty() == true)
-                        {
-                            tokens.push_back(new Number(0));
-                        }
-                        else
-                        {
-                            // 回头看一步
-                            Operator *top = dynamic_cast<Operator *>(tokens.back());
-                            if (top != nullptr && top->op == '(')
-                            {
-                                tokens.push_back(new Number(0));
-                            }
-                        }
-                    }
-                    tokens.push_back(new Operator(c));
-                }
+    int findIndex(const vector<int> &inorder, const int val) {
+        for (int i = 0; i < inorder.size(); i++) {
+            if (inorder[i] == val) {
+                return i;
             }
         }
-        if (readingNumber)
-        {
-            tokens.push_back(new Number(readNumber));
-        }
-        return tokens;
-    }
-
-    // 中缀 token 转换为 后缀 token
-    vector<Token *> convert2PostFix(const vector<Token *> &inFix)
-    {
-        std::stack<Operator *> s;
-        vector<Token *> result;
-
-        for (const auto token : inFix)
-        {
-            token->performInConvertion(result, s);
-        }
-
-        // 把剩下的表达式也放回去
-        while (s.empty() == false)
-        {
-            result.push_back(s.top());
-            s.pop();
-        }
-
-        return result;
-    }
-
-    // 后缀token直接求值
-    int getResultFromPostFix(const vector<Token *> &postFix)
-    {
-        std::stack<Number *> s;
-
-        for (const auto token : postFix)
-        {
-            token->performInEvaluaion(s);
-        }
-
-        return s.top()->value;
-    }
-
-    vector<Token *> getPostFixTokensFromStringVector(vector<string> &tokensString)
-    {
-        vector<Token *> tokens;
-        for (const string s : tokensString)
-        {
-            if (s.length() == 1 && isOperator(s[0]))
-            {
-                tokens.push_back(new Operator(s[0]));
-            }
-            else
-            {
-                tokens.push_back(new Number(std::stoi(s)));
-            }
-        }
-        return tokens;
+        return -1;
     }
 
 public:
-    int evalRPN(vector<string> &tokens)
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder)
     {
-        vector<Token *> postFix = getPostFixTokensFromStringVector(tokens);
-        return getResultFromPostFix(postFix);
+        const int n = preorder.size();
+        return dfs(preorder, inorder);
     }
 };
+
 
 int main()
 {
-    Solution s;
-    int ans = s.calculate("-1 + (-4 + 5)");
-    std::cout << ans << "\n";
+
+    vector<int> a = {1, 2, 3, 4, 5};
+    vector<int> b = {3,3,3,3,3};
+    std::move(a.begin(), a.end(), b.begin());
+
+    for (const int num : b) {
+        std::cout << num << "\n";
+    }
+
     return 0;
 }

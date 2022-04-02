@@ -31,40 +31,48 @@ class Solution
      * @param inL 同上
      * @param inR 同上
      * @return TreeNode* 根结点
+     * 
+     * 注意：本方法没有建立哈希表加速，因为preorder, inorder中可能存在重复值
      */
-    TreeNode *dfs(const vector<int> &preorder, const vector<int> &inorder, int preL, int preR, int inL, int inR)
+    TreeNode *dfs(const vector<int> &preorder, const vector<int> &inorder)
     {
-        if (preL > preR) {
+        if (preorder.empty() || inorder.empty()) {
             return nullptr;
         }
+        const int n = preorder.size();
 
-        const int preRoot = preL;  // 先序遍历中，根的位置
-        const int inRoot = inOrderIndexMap[preorder[preRoot]];  // 中序遍历中，根的位置
+        const int rootVal = preorder[0];
+        const int inRootIndex = findIndex(inorder, rootVal);  // 中序遍历中，根的位置
 
-        TreeNode *root = new TreeNode(preorder[preRoot]);  // 用val构建根
-        const int leftSubTreeSize = inRoot - inL;
-        root->left = dfs(preorder, inorder,
-            preL + 1, 
-            preL + leftSubTreeSize, 
-            inL, 
-            inRoot - 1
-        );
-        root->right = dfs(preorder, inorder,
-            preL + leftSubTreeSize + 1,
-            preR,
-            inRoot + 1,
-            inR
-        );
+        TreeNode *root = new TreeNode(rootVal);  // 用val构建根
+
+        vector<int> leftPreorder(inRootIndex);
+        vector<int> rightPreorder(n - inRootIndex - 1);
+        vector<int> leftInorder(inRootIndex);
+        vector<int> rightInorder(n - inRootIndex - 1);
+        std::move(preorder.begin() + 1, preorder.begin() + inRootIndex + 1, leftPreorder.begin());
+        std::move(preorder.begin() + inRootIndex + 1, preorder.end(), rightPreorder.begin());
+        std::move(inorder.begin(), inorder.begin() + inRootIndex, leftInorder.begin());
+        std::move(inorder.begin() + inRootIndex + 1, inorder.end(), rightInorder.begin());
+
+        root->left = dfs(leftPreorder, leftInorder);
+        root->right = dfs(rightPreorder, rightInorder);
         return root;
+    }
+
+    int findIndex(const vector<int> &inorder, const int val) {
+        for (int i = 0; i < inorder.size(); i++) {
+            if (inorder[i] == val) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 public:
     TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder)
     {
         const int n = preorder.size();
-        for (int i = 0; i < n; i++) {
-            this->inOrderIndexMap[inorder[i]] = i;
-        }
-        return dfs(preorder, inorder, 0, n - 1, 0, n - 1);
+        return dfs(preorder, inorder);
     }
 };
