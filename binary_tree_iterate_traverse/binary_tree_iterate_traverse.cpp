@@ -58,6 +58,9 @@ public:
     // 中序遍历
     vector<int> inorderTraversal(TreeNode *root)
     {
+        std::weak_ptr<int> s;
+        s.lock();
+
         vector<int> res;
         std::stack<TreeNode *> stk;
         TreeNode *node = root;

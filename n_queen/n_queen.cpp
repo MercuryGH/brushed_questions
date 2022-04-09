@@ -113,4 +113,8 @@ public:
         dfs(ans, curYs, 0);
         return ans;
     }
+
+    int totalNQueens(int n) {
+        return solveNQueens(n).size();
+    }
 };

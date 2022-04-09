@@ -77,31 +77,40 @@ private:
     }
 };
 
+// std::list + 模板实现方式
+// 需要使用 LRUCache<> 来实例化一个默认参数为 <int, int> 的模板对象
+
+// 把这个放到 LRUCache 类里面也行。这样每实例化一个LRUCache 对象，也会为这个对象实例化一个 KvPair（编译期就能确定实例化的类型）
+template <typename KeyType, typename ValueType>
+struct KvPair
+{
+    KvPair(KeyType k, ValueType v) : key(k), value(v) {}
+    KeyType key;
+    ValueType value;
+};
+
+template <typename KeyType = int, typename ValueType = int>
 class LRUCache
 {
-    using KeyType = int;
-    using ValueType = int;
-    struct KvPair
-    {
-        KvPair(KeyType k, ValueType v): key(k), value(v) {}
-        KeyType key;
-        ValueType value;
-    };
-    std::list<KvPair> container;
-    std::unordered_map<KeyType, std::list<KvPair>::iterator> lru;
+    // template <typename KeyType=int, typename ValueType=int>
+    std::list<KvPair<KeyType, ValueType>> container;
+    // typename 是为了让编译器知道后面这个是一个类型的名称
+    std::unordered_map<KeyType, typename std::list<KvPair<KeyType, ValueType>>::iterator> lru;
     int capacity;
 
 public:
-    LRUCache(int capacity): capacity(capacity) {}
+    LRUCache(int capacity) : capacity(capacity) {}
 
-    ValueType get(KeyType key) {
-        if (lru.find(key) == lru.end()) { // 找不到
+    ValueType get(KeyType key)
+    {
+        if (lru.find(key) == lru.end())
+        { // 找不到
             return -1;
         }
 
         // 找得到
         auto getKvPairItr = lru.at(key);
-        KvPair getKvPair = *getKvPairItr;
+        KvPair<KeyType, ValueType> getKvPair = *getKvPairItr;
         container.erase(getKvPairItr);
 
         container.push_front(getKvPair);
@@ -110,16 +119,21 @@ public:
         return getKvPair.value;
     }
 
-    void put(KeyType key, ValueType value) {
-        if (lru.find(key) == lru.end()) {
-            if (container.size() >= capacity) {
+    void put(KeyType key, ValueType value)
+    {
+        if (lru.find(key) == lru.end())
+        {
+            if (container.size() >= capacity)
+            {
                 lru.erase(container.back().key);
                 container.pop_back();
-            } 
+            }
             container.emplace_front(key, value);
-        } else {
+        }
+        else
+        {
             auto getKvPairItr = lru.at(key);
-            KvPair getKvPair = *getKvPairItr;
+            KvPair<KeyType, ValueType> getKvPair = *getKvPairItr;
             getKvPair.value = value;
 
             container.erase(getKvPairItr);
