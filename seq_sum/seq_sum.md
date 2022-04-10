@@ -8,7 +8,7 @@ $$
 
 ## 暴力解
 
-从$\frac{n}{2}$开始枚举每个正整数$k$，作为和为$n$的连续正整数序列的起点。
+从$\frac{n}{2}$开始，向下枚举每个正整数$k$，作为和为$n$的连续正整数序列的起点。
 
 对每个起点，枚举$k+1, k+2, \dots$并持续更新和，直到和等于$n$，则加入答案；否则和大于$k$，那么$k$不能作为和为$n$的连续正整数序列的起点。无论是否加入答案，下一个起点即为$k-1$。
 
@@ -95,3 +95,54 @@ public:
     }
 };
 ```
+
+## Prefer Discrete
+
+回到公式
+
+$$
+S_l = \frac{l(a_1 + a_l)}{2} = \frac{l(k+k+l-1)}{2} = \frac{l(2k + l - 1)}{2}.
+$$
+
+如果$(k,l)$确实是一个解，那么$S_l = n$，故
+
+$$
+2n = l(2k + l - 1).
+$$
+
+我们枚举$l \in [1, n]$，同时计算$k = \frac{1}{2}(\frac{2n}{l} + 1 - l)$即可，不需要做什么开平方的操作。代码如下：
+
+时间复杂度仍为$O(n)$。
+
+```cpp
+vector<vector<int>> findContinuousSequence(int target)
+{
+    vector<vector<int>> ans;
+    for (long long l = 1; l <= target; l++) {
+        if (2 * target % l == 0) {
+            const int tmp = 2 * target / l + 1 - l;
+            if (tmp % 2 == 0 && tmp >= 0) {
+                const int k = tmp / 2;
+                vector<int> cur;
+                for (int i = k; i < k + l; i++) {
+                    cur.push_back(i);
+                }
+                ans.push_back(cur);
+            }
+        }
+    }
+    return ans;
+}
+```
+
+## 快速枚举
+
+在
+
+$$
+2n = l(2k + l - 1)
+$$
+
+中，注意到$2k - 1 > 0$，故$l < 2k + l - 1$。假设$n \geq \sqrt {2n}$，那么就有$2k + l - 1 > l$，从而$2k + l - 1 > \sqrt {2n}$，从而$l(2k + l - 1) > 2n$，矛盾！
+
+于是，枚举$l$的区间可以缩小到$[1, \sqrt{2n})$，时间复杂度优化为$O(\sqrt n)$。

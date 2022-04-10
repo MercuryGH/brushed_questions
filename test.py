@@ -1,37 +1,38 @@
-import collections
-import itertools
 from typing import List, Final
 
 class Solution:
-    def mostVisitedPattern(self, username: List[str], timestamp: List[int], website: List[str]) -> List[str]:
-        # 首先，记录每个用户访问过的页面，并按照时间先后顺序排序. 通过combinations排列组合的方式，记录每个页面三元组对应的用户集合. 根据用户集合大小逆序排序，字典序升序排序后的第一项即为所求. 
-        # 时间O(N^3), 假设有 k个不同的人，那么每个人平均访问的网站数为 n/k, 排列组合的复杂度为O((n/k)^3)，加上外层遍历用户的复杂度为O(n^3/k^2). 空间O(N^3)：根据时间复杂度的分析，所有路径的最大数量为n^3，所以记录路径的哈希表的空间复杂度为O(N^3)
-        n: Final = len(username)
-        # key为用户名，value为 (访问时间, 页面) 的列表，且value按照访问时间排序
-        m_dict = collections.defaultdict(list)  # key: any, value: list（value的默认值为空list）
-        # 存储用户访问记录, 此步骤O(N)
+    def filterStr(str, l, r) -> str:
+        n = len(str)
+        res = ''
+        for i in range(l):
+            res += str[i]
+        for i in range(r, n):
+            res += str[i]
+        return res
+            
+    def deleteText(self, article: str, index: int) -> str:
+        cursor = article[index]
+        if cursor == ' ':
+            return article
+
+        article = ' ' + article + ' '
+        index += 1
+        n: Final = len(article)
+        l = 0
+        r = 0
         for i in range(n):
-            m_dict[username[i]].append((timestamp[i], website[i]))
+            if article[i] == ' ':
+                if i < index:
+                    l = i
+            if article[i] == ' ':
+                if i > index:
+                    r = i
+                    break
+        print(l, r)
         
-        # 此步骤O(N^2)，因为需要遍历O(N)的列表，而每个key对应的数组最高是O(N)长度
-        for key in m_dict:
-            m_dict[key].sort() # 元组排序
-        # key为页面的三元组，value为按顺序访问过该三元组的用户的集合（要去重）
-        patternUser = collections.defaultdict(set)
+        article = Solution.filterStr(article, l, r).strip()
+        return article
+            
+s = Solution()
+print(s.deleteText("Hello", 0))
 
-        # 获取每个三元组的用户集合
-        for key, value in m_dict.items():
-            # e.g. value = [(1, 'home'), (2, 'about'), (3, 'career'), (4, 'gaming')]
-            for combined in itertools.combinations(value, 3):
-                # e.g. combined = ((1, 'home'), (2, 'about'), (3, 'career'))
-                siteName = (combined[0][1], combined[1][1], combined[2][1])
-                # e.g. key_from_tuple = ()
-                patternUser[siteName].add(key)
-        # 首先按照用户集合大小逆序排序，相同情况按照按字典排序
-        res = sorted(patternUser, key=lambda x:(-len(patternUser[x]), x))
-        return res[0]
-
-nums = [1, 4, 25, 10, 25]
-k = 2
-nums = [5, 6]
-k = 6

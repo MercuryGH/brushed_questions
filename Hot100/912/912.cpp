@@ -91,21 +91,26 @@ class Solution
 
     /**
      * 堆排序
-     * 由于只需要 percolateDown，所以不需要 nums[0] 作为 pivot
+     * 建立大顶堆
+     * nums[0] 预先用pivot填上
      */ 
     void percolateDown(vector<int> &nums, int cur, int size) {
         while (true) {
-            const int lSon = cur * 2 + 1;
-            const int rSon = cur * 2 + 2;
-            const bool hasLSon = lSon < size;
-            const bool hasRSon = rSon < size;
+            const int lSon = cur * 2;
+            const int rSon = cur * 2 + 1;
+            const bool hasLSon = lSon <= size;
+            const bool hasRSon = rSon <= size;
 
             int largeIndex = cur;
             if (hasLSon) {
-                largeIndex = nums[largeIndex] > nums[lSon] ? largeIndex : lSon;
+                if (nums[largeIndex] < nums[lSon]) {
+                    largeIndex = lSon;
+                }
             }
             if (hasRSon) {
-                largeIndex = nums[largeIndex] > nums[rSon] ? largeIndex : rSon;
+                if (nums[largeIndex] < nums[rSon]) {
+                    largeIndex = rSon;
+                }
             }
 
             if (largeIndex == cur) { // 到底了，或者下面的都是小的
@@ -116,16 +121,22 @@ class Solution
         }
     }
     void buildMaxHeap(vector<int> &nums, int size) {
-        for (int i = (size - 1) / 2; i >= 0; i--) {
+        for (int i = size / 2; i >= 1; i--) {
             percolateDown(nums, i, size);
         }
     }
     void heapSort(vector<int> &nums, int n) {
+        nums.insert(nums.begin(), INT_MAX);
+
         buildMaxHeap(nums, n);
-        for (int i = n - 1; i >= 1; i--) {
-            std::swap(nums[i], nums[0]);
-            percolateDown(nums, 0, i);
+        // 不断将 max pop 到数组的最后面。这样就能实现从小到大排序了
+        for (int i = n; i >= 2; i--) {
+            std::swap(nums[i], nums[1]);
+            percolateDown(nums, 1, i - 1); // 注意确定位置之后，堆的大小要 -1
         }
+
+        std::move(nums.begin() + 1, nums.end(), nums.begin());
+        nums.resize(n);
     }
 
 public:
@@ -139,7 +150,7 @@ public:
 
         // tmp.resize(n, 0);
         // mergeSort(nums, 0, n - 1);
-
+        
         heapSort(nums, n);
 
         return nums;

@@ -20,47 +20,28 @@ using std::vector, std::string;
  *
  * 输入：target = 9
    输出：[[2,3,4],[4,5]]
+   输出：2
  */
 class Solution
 {
-    bool isSquare(long long num)
-    {
-        long long sqrtNum = std::sqrt(num);
-        return sqrtNum * sqrtNum == num;
-    }
-    bool isOdd(long long num)
-    {
-        return num % 2 == 1;
-    }
 public:
-    vector<vector<int>> findContinuousSequence(int target)
+    int consecutiveNumbersSum(int target)
     {
-        vector<vector<int>> ans;
-        for (long long k = 1; k <= target / 2; k++)
-        {
-            const long long delta = (2 * k - 1) * (2 * k - 1) + 8 * target;
-            if (isSquare(delta) == false)
-            {
-                continue;
-            }
-            const long long nominator = 1 - 2 * k + std::sqrt(delta);
-            if (isOdd(nominator))
-            {
-                continue;
-            }
-            const long long l = nominator / 2;
-
-            const int sum = l * (2 * k + l - 1) / 2;
-            if (sum == target)
-            {
-                vector<int> curAns;
-                for (int i = k; i < k + l; i++)
-                {
-                    curAns.push_back(i);
+        int ans = 0;
+        for (long long l = 2; l < std::sqrt(2 * target); l++) {
+            if (2 * target % l == 0) {
+                const int tmp = 2 * target / l + 1 - l;
+                if (tmp % 2 == 0 && tmp >= 0) {
+                    const int k = tmp / 2;
+                    ans++;
+                    // vector<int> cur;
+                    // for (int i = k; i < k + l; i++) {
+                    //     cur.push_back(i);
+                    // }
+                    // ans.push_back(cur);
                 }
-                ans.push_back(curAns);
             }
         }
-        return ans;
+        return ans + 1;
     }
 };

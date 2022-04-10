@@ -5,6 +5,7 @@
 #include <list>
 #include <memory>
 #include <queue>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stack>
@@ -14,20 +15,14 @@
 #include <vector>
 using std::vector, std::string;
 
-struct Dfa {
-    long long num = 0;
-
-    struct State {
-        
-
-    };
-
-
+class Solution
+{
 public:
-
-
-
+    vector<int> lightSticks(int height, int width, vector<int> &indices)
+    {
+    }
 };
 
-int main() {
+int main()
+{
 }
