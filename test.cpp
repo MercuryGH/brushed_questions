@@ -15,14 +15,23 @@
 #include <vector>
 using std::vector, std::string;
 
-class Solution
-{
-public:
-    vector<int> lightSticks(int height, int width, vector<int> &indices)
-    {
+struct A {
+    vector<int> v;
+    A() {
+    }
+
+    void addElement(int e) {
+        v.push_back(e);
+    }
+
+    vector<int> getVector() const {
+        return std::move(v);
     }
 };
 
 int main()
 {
+    A a;
+    a.addElement(1);
+    a.addElement(2);
 }
