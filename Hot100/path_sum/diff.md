@@ -45,3 +45,36 @@ $$
 但要注意，由于子结点的内容可能很丰富，因此尽管可能有$s_{\text{child}} = s_{\text{node}}$，但也不能放弃往child所在的子树继续DP。
 
 时间复杂度为$O(n)$。
+
+```cpp
+int dp(int &maxLen, int curNode, const vector<vector<int>> &children, const string &s)
+{
+    int max = 0;
+    int subMax = 0;
+    for (const int child : children[curNode])
+    {
+        if (s[child] == s[curNode])
+        {
+            // Only DP
+            dp(maxLen, child, children, s);
+        }
+        else
+        {
+            // DP and update
+            const int childDp = dp(maxLen, child, children, s);
+            if (childDp > max)
+            {
+                subMax = max;
+                max = childDp;
+            }
+            else if (childDp > subMax)
+            {
+                subMax = childDp;
+            }
+        }
+    }
+    int res = max + 1;
+    maxLen = std::max(maxLen, max + subMax + 1);
+    return res;
+}
+```
