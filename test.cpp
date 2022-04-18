@@ -13,46 +13,110 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-using std::vector, std::string;
+using std::vector, std::string, std::pair;
 
 /*
 给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。 
 */
 class Solution
 {
-    int n;
-    void dfs(std::vector<std::vector<int>> &permutations, std::vector<int> &cur, std::vector<bool> &vis, const std::vector<int> &nums, int step) {
-        if (step == n) {
-            permutations.push_back(cur);
-            return;
+    // 传参 const string &s 比 const string 要快得多！！
+    int dp(int &maxLen, int curNode, const vector<vector<int>> &children, const string &s)
+    {
+        int max = 0;
+        int subMax = 0;
+        for (const int child : children[curNode])
+        {
+            if (s[child] == s[curNode])
+            {
+                // Only DP
+                dp(maxLen, child, children, s);
+            }
+            else
+            {
+                // DP and update
+                const int childDp = dp(maxLen, child, children, s);
+                if (childDp > max)
+                {
+                    subMax = max;
+                    max = childDp;
+                }
+                else if (childDp > subMax)
+                {
+                    subMax = childDp;
+                }
+            }
+        }
+        int res = max + 1;
+        maxLen = std::max(maxLen, max + subMax + 1);
+        return res;
+    }
+
+    int dp(int &maxLen, int curNode, const std::unordered_map<int, vector<int>> &children)
+    {
+        int max = 0;
+        int subMax = 0;
+        for (const int child : children.at(curNode))
+        {
+            // DP and update
+            const int childDp = dp(maxLen, child, children);
+            if (childDp > max)
+            {
+                subMax = max;
+                max = childDp;
+            }
+            else if (childDp > subMax)
+            {
+                subMax = childDp;
+            }
+        }
+        int res = max + 1;
+        maxLen = std::max(maxLen, max + subMax + 1);
+        return res;
+    }
+
+public:
+    int longestPath(vector<int> &parent, string s)
+    {
+        const int n = parent.size();
+        vector<vector<int>> children(n);
+
+        for (int i = 1; i < n; i++)
+        {
+            children[parent[i]].push_back(i);
         }
 
-        for (int i = 0; i < n; i++) {
-            if (i > 0 && nums[i] == nums[i - 1] && vis[i - 1] == false) {
-                continue;
-            }
-            if (vis[i] == false) {
-                vis[i] = true;
-                cur.push_back(nums[i]);
-                dfs(permutations, cur, vis, nums, step + 1);
-                cur.pop_back();
-                vis[i] = false;
+        int ans = 0;
+        dp(ans, 0, children, s);
+        return ans;
+    }
+
+    int treeDiameter(vector<vector<int>> &edges)
+    {
+        if (edges.empty()) {
+            return 0;
+        }
+        std::unordered_map<int, vector<int>> children;
+        for (const auto &edge : edges) {
+            const int n1 = edge[0];
+            const int n2 = edge[1];
+            children[n1].push_back(n2);
+            if (children.find(n2) == children.end()) {
+                children[n2] = {};
             }
         }
-    }
-public:
-    std::vector<std::vector<int>> permuteUnique(std::vector<int> &nums)
-    {
-        std::sort(nums.begin(), nums.end());
-        n = nums.size();
-        std::vector<std::vector<int>> ans;
-        std::vector<bool> vis(n, false);
-        std::vector<int> cur;
-        dfs(ans, cur, vis, nums, 0);
-        return ans;
+
+        int ans = 0;
+        dp(ans, 0, children);
+        return ans - 1;
     }
 };
 
 int main()
 {
 }
+
+/*
+PB19061341
+niuniu123456
+*/
