@@ -26,7 +26,7 @@ class Solution
     int n;
 
     /**
-     * 获取 prefix 下的子树的大小
+     * @brief 获得在 prefix 下的子树的大小
      * 简单递归，会超时
      */
     int getCountUnderPrefix_BadRecursive(int prefix)
@@ -44,8 +44,11 @@ class Solution
         return cnt;
     }
 
-    // 迭代优化，O(log n) 不会超时
-    // 爆 int 所以要开 long long
+    /**
+     * @brief 获得在 prefix 下的子树的大小
+     * 这是迭代优化的版本，O(log n) 不会超时
+     * 爆 int 所以要开 long long
+     */
     int getCountUnderPrefix(int prefix)
     {
         long long cnt = 0;
@@ -56,32 +59,47 @@ class Solution
         return cnt;
     }
 
+    bool found = false;
+
+    /**
+     * @brief 搜索十叉树找到 curRank == k 的 curNum
+     * 
+     * @param ans      返回值
+     * @param curRank  curNum 位于 [1, n] 中的字典序（从1开始数起）
+     * @param curNum   当前状态指向的数
+     * @param k        目标字典序（从1开始数起）
+     */
+    void dfs(int &ans, int curRank, int curNum, const int k) {
+        if (found) {
+            return;
+        }
+        if (curRank == k) {
+            ans = curNum;
+            found = true;
+            return;
+        }
+
+        for (int i = 0; i <= 9; i++) {
+            if (i == 0 && curNum == 0) {
+                continue;
+            }
+            const int child = curNum * 10 + i;
+            const int prefixCnt = getCountUnderPrefix(child);
+            if (curRank + prefixCnt >= k) {
+                dfs(ans, curRank + 1, child, k);
+                break;
+            } else {
+                curRank += prefixCnt;
+            }
+        }
+    }
+
 public:
     int findKthNumber(int n, int k)
     {
         this->n = n;
-
-        int ptr = 1; // 当前所在的数是字典序第 ptr 小的数
-        int prefix = 1;
-        while (true)
-        {
-            if (ptr == k) // 依照下面的算法，不可能出现 ptr > k 的情况
-            {
-                break;
-            }
-
-            int cnt = getCountUnderPrefix(prefix);
-            if (ptr + cnt > k) // 第 k 个数在 prefix 下
-            {
-                prefix *= 10; // 往下搜
-                ptr++;
-            }
-            else // 不在当前前缀下
-            {
-                prefix++; // 往右搜
-                ptr += cnt;
-            }
-        }
-        return prefix;
+        int ans = 0;
+        dfs(ans, 0, 0, k);
+        return ans;
     }
 };
