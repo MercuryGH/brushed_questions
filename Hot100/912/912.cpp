@@ -15,7 +15,7 @@ class Solution
     int randomizedGetPartition(vector<int> &nums, int l, int r)
     {
         const int randomIndex = getRandomNumber(l, r);
-        std::swap(nums[l], nums[randomIndex]); // 钦定 pivot = nums[r]
+        std::swap(nums[l], nums[randomIndex]); // 钦定 pivot = nums[l]
 
         const int pivot = nums[l];
 
@@ -32,7 +32,7 @@ class Solution
         return ptr;
     }
 
-    // 快速
+    // 快速（随机化）
     void quickSort(vector<int> &nums, int l, int r)
     {
         if (l >= r)
@@ -62,6 +62,9 @@ class Solution
     }
 
     vector<int> tmp;
+    /**
+     * 将nums[]数组的两个有序子数组nums[l : mid], nums[mid + 1, r]（闭区间）合并
+     */
     void merge(vector<int> &nums, int l, int mid, int r) {
         int i = l;
         int j = mid + 1;
@@ -156,3 +159,7 @@ public:
         return nums;
     }
 };
+
+/*
+
+ */
