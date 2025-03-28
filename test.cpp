@@ -3,9 +3,9 @@
 #include <ctime>
 #include <iostream>
 #include <list>
+#include <map>
 #include <memory>
 #include <queue>
-#include <map>
 #include <set>
 #include <sstream>
 #include <stack>
@@ -15,9 +15,41 @@
 #include <vector>
 using std::vector, std::string, std::pair;
 
-class Solution {
-    static int disSqr(int x, int y, int cx, int cy) {
-        return (x - cx) * (x - cx) + (y - cy) * (y - cy);
+/*
+给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。 
+*/
+class Solution
+{
+    // 传参 const string &s 比 const string 要快得多！！
+    int dp(int &maxLen, int curNode, const vector<vector<int>> &children, const string &s)
+    {
+        int max = 0;
+        int subMax = 0;
+        for (const int child : children[curNode])
+        {
+            if (s[child] == s[curNode])
+            {
+                // Only DP
+                dp(maxLen, child, children, s);
+            }
+            else
+            {
+                // DP and update
+                const int childDp = dp(maxLen, child, children, s);
+                if (childDp > max)
+                {
+                    subMax = max;
+                    max = childDp;
+                }
+                else if (childDp > subMax)
+                {
+                    subMax = childDp;
+                }
+            }
+        }
+        int res = max + 1;
+        maxLen = std::max(maxLen, max + subMax + 1);
+        return res;
     }
 
     static int pointHash(int x, int y) {
@@ -56,7 +88,3 @@ int main()
 {
 }
 
-/*
-PB19061341
-niuniu123456
-*/

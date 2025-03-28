@@ -9,48 +9,37 @@ using std::vector;
  */
 class Solution
 {
-    vector<bool> vis;
     int n;
-
-    void dfs(vector<vector<int>> &combinations, vector<int> &curCombination, const vector<int> &candidates, const int target, const int index)
-    {
-        if (target == 0)
-        {
+    void dfs(vector<vector<int>> &combinations, vector<int> &curCombination, vector<bool> &vis, const int index, const int curSum, const vector<int> &candidates, const int target) {
+        if (curSum == target) {
             combinations.push_back(curCombination);
             return;
         }
-        if (target < 0)
-        {
+        if (curSum > target) {
             return;
         }
 
-        for (int i = index; i < n; i++)
-        {
-            if (i != 0 && candidates[i - 1] == candidates[i] && vis[i - 1] == false)
-            // 去重必备语句：如果之前的没选，那么这个也不能选
-            {
+        for (int i = index; i < n; i++) {
+            if (i > 0 && candidates[i] == candidates[i - 1] && vis[i - 1] == false) {
                 continue;
             }
-            if (vis[i] == false)
-            {
-                vis[i] = true;
-                curCombination.push_back(candidates[i]);
-                dfs(combinations, curCombination, candidates, target - candidates[index], i + 1);
-                curCombination.pop_back();
-                vis[i] = false;
-            }
+
+            vis[i] = true;
+            curCombination.push_back(candidates[i]);
+            dfs(combinations, curCombination, vis, i + 1, curSum + candidates[i], candidates, target);
+            curCombination.pop_back();
+            vis[i] = false;
         }
     }
-
 public:
     vector<vector<int>> combinationSum2(vector<int> &candidates, int target)
     {
-        std::sort(candidates.begin(), candidates.end()); // 去重必须
-        vis.resize(n, false);
-
+        std::sort(candidates.begin(), candidates.end());
+        n = candidates.size();
         vector<vector<int>> ans;
+        vector<bool> vis(n, false);
         vector<int> curCombination;
-        dfs(ans, curCombination, candidates, target, 0);
+        dfs(ans, curCombination, vis, 0, 0, candidates, target);
         return ans;
     }
 };
