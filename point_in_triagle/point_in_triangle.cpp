@@ -20,6 +20,9 @@ public:
     }
 
     // Cross product
+    // | i  j  k  |
+    // | x1 y1 z1 |
+    // | x2 y2 z2 |
     Vector3 Cross(const Vector3& v) const
     {
         return Vector3(
