@@ -15,72 +15,31 @@
 #include <vector>
 using std::vector, std::string, std::pair;
 
-/*
-给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。 
-*/
-class Solution
-{
-    // 传参 const string &s 比 const string 要快得多！！
-    int dp(int &maxLen, int curNode, const vector<vector<int>> &children, const string &s)
-    {
-        int max = 0;
-        int subMax = 0;
-        for (const int child : children[curNode])
-        {
-            if (s[child] == s[curNode])
-            {
-                // Only DP
-                dp(maxLen, child, children, s);
-            }
-            else
-            {
-                // DP and update
-                const int childDp = dp(maxLen, child, children, s);
-                if (childDp > max)
-                {
-                    subMax = max;
-                    max = childDp;
-                }
-                else if (childDp > subMax)
-                {
-                    subMax = childDp;
-                }
-            }
-        }
-        int res = max + 1;
-        maxLen = std::max(maxLen, max + subMax + 1);
-        return res;
-    }
-
-    static int pointHash(int x, int y) {
-        return x * 1000 + y;
-    }
-
-    static void handleSquare(std::unordered_set<int> &calcPoints, int cx, int cy, int r) {
-        for (int i = cx - r; i <= cx; i++) {
-            for (int j = cy - r; j <= cy; j++) {
-                if (disSqr(i, j, cx, cy) <= r * r) {
-                    calcPoints.insert(pointHash(i, j));
-                    calcPoints.insert(pointHash(i, 2 * cy - j));
-                    calcPoints.insert(pointHash(2 * cx - i, j));
-                    calcPoints.insert(pointHash(2 * cx - i, 2 * cy - j));
-                }
-            }
-        }
-    }
-
+class Solution {
 public:
-    int countLatticePoints(vector<vector<int>>& circles) {
-        std::unordered_set<int> calcPoints;
+    int lengthOfLongestSubstring(string s) {
+        std::unordered_set<char> lookup;
+        int ans = 0;
 
-        for (const auto &circle : circles) {
-            const int cx = circle[0];
-            const int cy = circle[1];
-            const int r = circle[2];
-            handleSquare(calcPoints, cx, cy, r);
+        int window_left = 0;
+        int window_right = 0;
+        for (int i = 0; i < s.length(); i++) {
+            window_right = i;
+            if (lookup.find(s.at(i)) != lookup.end()) { // find something
+                while (true) {
+                    lookup.erase(s.at(window_left));
+                    window_left++;
+                    if (lookup.find(s.at(i)) == lookup.end()) {
+                        break;
+                    }
+                }
+            }
+            ans = std::max(ans, window_right - window_left + 1);
+
+            lookup.insert(s.at(i));
         }
 
-        return calcPoints.size();
+        return ans;
     }
 };
 

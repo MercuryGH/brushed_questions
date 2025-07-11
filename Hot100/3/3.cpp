@@ -1,31 +1,53 @@
 #include <algorithm>
-#include <unordered_set>
+#include <cmath>
+#include <ctime>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <queue>
+#include <set>
+#include <sstream>
+#include <stack>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+using std::vector, std::string, std::pair;
 
 /**
  * 找出无重复字符的最长子串的长度
  * 动态规划写不出来
- * 
+ *
  * 标准答案：滑动窗口，时间复杂度仅 O(n)
  * 拓展题目（推广）：至多包含 k 个不同字符的最长子串 (Leetcode 340)，还是滑动窗口
  */
-class Solution {
+class Solution
+{
 public:
-    int lengthOfLongestSubstring(std::string s) {
-        const int n = s.length();
+    int lengthOfLongestSubstring(string s)
+    {
+        std::unordered_set<char> lookup;
+        int ans = 0;
 
-        std::unordered_set<char> lookup;  // 滑动窗口内的含有的字符集合
-        int maxLen = 0;
-        int left = 0;
-        for (int i = 0; i < n; i++) {  // i 用于枚举滑动窗口右端点
-            const char cur = s[i];
-            while (lookup.find(cur) != lookup.end()) {  // 在滑动窗口里找到了当前字符
-                lookup.erase(s[left]);  // 滑动窗口左端点右移，直到找不到当前字符
-                left++;
+        int window_left = 0;
+        int window_right = 0;
+        for (int i = 0; i < s.length(); i++) {
+            window_right = i;
+            if (lookup.find(s.at(i)) != lookup.end()) { // find something
+                while (true) {
+                    lookup.erase(s.at(window_left));
+                    window_left++;
+                    if (lookup.find(s.at(i)) == lookup.end()) {
+                        break;
+                    }
+                }
             }
-            maxLen = std::max(maxLen, i - left + 1);  // 读一个字符，就更新答案
-            lookup.insert(cur);  // 加入滑动窗口
+            ans = std::max(ans, window_right - window_left + 1);
+
+            lookup.insert(s.at(i));
         }
-        return maxLen;
+
+        return ans;
     }
 };

@@ -25,7 +25,7 @@ class Solution
             return;
         }
 
-        const char curDigit = digits[index];
+        const char curDigit = digits.at(index);
         const std::string &letters = phoneDigit.at(curDigit);  // 取出引用的at重载更省时间
         for (const char &letter : letters)
         {

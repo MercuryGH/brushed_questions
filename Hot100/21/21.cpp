@@ -43,6 +43,9 @@ public:
             cur->next = l1;
         }
 
-        return dummy->next;
+        ListNode *ans = dummy->next;
+        delete dummy;
+
+        return ans;
     }
 };

@@ -12,6 +12,7 @@ public:
         if (n == 0) {
             return {};
         }
+        // lexicographical order sort on inner vectors
         std::sort(intervals.begin(), intervals.end());
         vector<vector<int>> merged;
 
