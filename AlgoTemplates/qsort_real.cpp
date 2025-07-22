@@ -23,9 +23,32 @@ void swap(int *a, int *b)  // C风格swap函数
     *b = tmp;
 }
 
+// 将nums通过 nums[返回值] 分割成小、大两部分
+int randomizedGetPartition(vector<int>& nums, int l, int r)
+{
+    const int randomIndex = getRandomNumber(l, r);
+    std::swap(nums[l], nums[randomIndex]); // 钦定 pivot = nums[l]
+
+    const int pivot = nums[l];  // pivot随机选取，或者直接选取最左边的元素
+
+    int ptr = l; // ptr 始终指向最右边的 <= pivot 的数
+    // 将数组调整成 pivot, [<=pivot], ptr, [>pivot]
+    for (int i = l + 1; i <= r; i++)
+    {
+        if (nums[i] <= pivot)
+        {
+            ptr++;
+            std::swap(nums[ptr], nums[i]);
+        }
+    }
+    // 将数组调整成 [<=pivot], pivot, [>pivot]
+    std::swap(nums[ptr], nums[l]);
+    return ptr;
+}
+
 int getPartition(int a[], int l, int r)  // 获取快速排序的分段位置
 {
-    int pivot = a[l];  // pivot直接选取最左边的元素
+    int pivot = a[l];  // pivot直接选取最左边的元素，或者随机
     int i = l, j = r;  // 两个index指针
     while (1)  // 循环直至 i >= j，即相遇
     {
