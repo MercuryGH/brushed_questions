@@ -89,6 +89,7 @@ class Solution
 
     /**
      * 链表快速排序
+     * 时间复杂度 n log n，空间复杂度 log n
      * 
      * pivot 如果还像随机化快速排序那样选择任一元素，就可能要遍历整个链表，代价太大
      * 因此这里只实现了选择头元素作为pivot
@@ -123,7 +124,9 @@ class Solution
     }
 
     /**
-     * 链表归并排序
+     * 链表归并排序（递归版）
+     * 时间复杂度 n log n 空间复杂度 log n
+     * 如果使用迭代的归并排序，则可以做到时间复杂度 n log n，空间复杂度 1
      */
     ListNode *mergeSortList(ListNode *head) {
         return divide(head);
